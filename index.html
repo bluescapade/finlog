@@ -426,6 +426,44 @@ input[type=date].inp{font-family:'Fredoka',sans-serif;font-weight:500;font-size:
 .tagline.open{max-height:220px;overflow:auto}
 .tagmore{flex:none;width:36px;height:36px;margin-top:2px;border-radius:50%;border:2px solid var(--ink);background:var(--fn);display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--ink)}
 .tagmore[hidden]{display:none}
+.mbody>*{flex-shrink:0}
+#modal .mbody .card{max-height:none;animation:none}
+#upmbox>.card{border:0;box-shadow:none;padding:0;background:none}
+#upmbox>.card:active{transform:none}
+kbd{font-family:Fredoka,sans-serif;font-weight:500;font-size:13px;min-width:26px;height:26px;padding:0 7px;display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:8px;background:var(--fn);box-shadow:0 2px 0 var(--ink)}
+.krow{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:2px dashed var(--line)}.krow:first-child{border-top:0}.krow .kk{display:flex;gap:4px;min-width:86px}
+.railadd,.dkeys,.wideonly{display:none}
+/* ---------- iPad & laptop: side rail + columns, so more fits on one screen ---------- */
+@media (min-width:740px){
+  :root{--rail:92px}
+  #bnav{display:none}
+  .top>.ibtn[data-act=drawer]{display:none}
+  #drawer .ov{display:none!important}
+  #drawer .pane{transform:none!important;width:var(--rail);box-shadow:none;transition:none;padding:calc(14px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom))}
+  #drawer .navi{animation:none!important}
+  #app{max-width:none;margin:0 0 0 var(--rail);padding:calc(10px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));display:block;column-width:330px;column-gap:18px}
+  #app>*{break-inside:avoid;margin:0 0 18px}
+  #app>.top,#app>.backrow,#app>.hello,#app>.seg.full,#app>.spanall{column-span:all}
+  #app>.ttl{display:none}
+  #app>.top{position:relative;top:auto;background:none;max-width:560px;margin-left:auto;margin-right:auto}
+  #app>.backrow{margin:-8px 0 14px}
+  .railadd{display:flex;width:100%;justify-content:center;gap:4px;margin:2px 0 8px}
+  .wideonly{display:block}.mobonly{display:none!important}
+  #toast{left:calc(50% + var(--rail) / 2)}
+  #modal .card{max-width:440px}
+  .navi{justify-content:center;padding:6px}
+  .navi .col,.dhead .col,.darr,.dfoot,.railadd .rl{display:none}
+  .dhead{justify-content:center;padding:4px 0 8px!important}
+}
+@media (min-width:1100px){
+  :root{--rail:268px}
+  .navi{justify-content:flex-start;padding:4px 10px}
+  .navi .col,.dhead .col{display:flex}
+  .darr,.dfoot{display:flex}
+  .railadd .rl{display:inline}
+  .dkeys{display:inline-flex}
+  .dhead{justify-content:flex-start;padding:4px 6px 10px!important}
+}
 </style>
 </head>
 <body>
@@ -599,6 +637,7 @@ function upCal(withSummary,cid){
     '<div class="legend"><span><i class="mk" style="background:#B49AE6"></i>repeating</span><span><i class="mk cut"></i>card cut-off</span><span><i class="mk due"></i>card due</span></div>'+
     (sum1?'<div style="margin-top:10px;border-top:2px dashed var(--line);padding-top:8px"><div class="qchips">'+[['all','Everything'],['rec','Repeating'],['card','Card dates']].map(([k,l])=>'<button type="button" class="qchip'+(upF===k?' on':'')+'" data-act="upf" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+sum1+'</div>':'')+'</div>';
 }
+function upListCard(cid){return '<div class="card"><div class="ttl">Coming up</div><div class="qchips" style="margin-top:8px">'+[['all','Everything'],['rec','Repeating'],['card','Card dates']].map(([k,l])=>'<button type="button" class="qchip'+(upF===k?' on':'')+'" data-act="upf" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+upMonthList(cid)+'</div>';}
 function upMonthList(cid){
   const [y,m]=upMonth.split('-').map(Number);
   const ev=eventsBetween(upMonth+'-01',ymd(y,m,dim(y,m)),cid).filter(upKeep).sort((a,b)=>a.date.localeCompare(b.date));
@@ -922,18 +961,51 @@ function renderNav(){
   b.innerHTML=it('home',ICON.home,'Home')+it('day',ICON.today,'Today').replace('data-act="go"','data-act="gotoday"')+'<button type="button" class="plus" data-act="logtoday" aria-label="Add expense for today">+</button>'+it('money',ICON.wallet,'Wallets',['card'])+it('more',ICON.more,'Others',['utang','repeat','budgets','streaks','split','calc','search','activity','transfers','panic']);
 }
 let navEdit=false;
+const WQ=(()=>{try{return matchMedia('(min-width:740px)');}catch(e){return null;}})();
+const WIDE=()=>!!(WQ&&WQ.matches);
+try{WQ&&WQ.addEventListener('change',()=>{if(!WIDE()){drawerOpen=false;$('#drawer').className='';}rerender();});}catch(e){}
 const ARR_IC='<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="'+INK+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v14M3 6l3-3 3 3M14 17V3M11 14l3 3 3-3"/></svg>';
 function navPages(){const o=S.navOrder||[];return PAGES.slice().sort((a,b)=>{const x=o.indexOf(a.id),y=o.indexOf(b.id);return (x<0?99+PAGES.indexOf(a):x)-(y<0?99+PAGES.indexOf(b):y);});}
+const KEYPAGES={h:'home',w:'money',b:'bills',s:'sum',o:'more',r:'repeat',u:'utang',i:'income',p:'piggy',c:'cats',l:'activity'};
+function keyNav(e){
+  if(e.metaKey||e.ctrlKey||e.altKey||isTyping())return false;
+  if(!$('#modal').hidden||!$('#lock').hidden||!$('#auth').hidden||calOpen)return false;
+  const k=e.key.length===1?e.key.toLowerCase():e.key,pg=curPage();
+  const go=p=>{e.preventDefault();goPage(p);return true;};
+  if(/^[1-9]$/.test(k)){const q=navPages()[+k-1];return q?go(q.id):false;}
+  if(k==='n'||k==='a'){e.preventDefault();expModal(null,today());return true;}
+  if(k==='t'){e.preventDefault();S.sel=today();save();goPage('day');return true;}
+  if(k===','){return go('settings');}
+  if(k==='/'){e.preventDefault();goPage('search');setTimeout(()=>{const el=document.querySelector('[data-in=sq]');if(el)el.focus();},80);return true;}
+  if(k==='?'){e.preventDefault();keysModal();return true;}
+  const step=k==='ArrowLeft'||k==='['?-1:k==='ArrowRight'||k===']'?1:0;
+  if(step){if(pg==='day'){e.preventDefault();handleAct({dataset:{act:'day',v:String(step)}});return true;}
+    if(pg==='home'){e.preventDefault();handleAct({dataset:{act:'dw',v:String(step)}});return true;}
+    if(pg==='sum'&&sumMode==='week'){e.preventDefault();handleAct({dataset:{act:'sw',v:String(step)}});return true;}
+    return false;}
+  if(KEYPAGES[k])return go(KEYPAGES[k]);
+  return false;
+}
+function keysModal(){
+  const row=(keys,what)=>'<div class="krow"><span class="kk">'+keys.map(x=>'<kbd>'+x+'</kbd>').join('')+'</span><span style="flex:1">'+what+'</span></div>';
+  const nav=navPages().slice(0,9).map((q,i)=>row([String(i+1)],q.label)).join('');
+  openModal('<span class="fr" style="font-size:20px">⌨ keyboard shortcuts</span><span class="sub" style="font-size:13px">for your iPad or laptop keyboard. they pause while you\'re typing in a box.</span>'+
+    '<div>'+row(['N'],'add an expense')+row(['T'],'today')+row(['←','→'],'previous / next day or week')+row(['⌘','↵'],'save the popup you\'re in')+row(['Esc'],'close a popup')+row(['/'],'search')+row([','],'settings')+row(['?'],'this list')+'</div>'+
+    '<div class="lbl" style="margin-top:4px">jump to a page</div><div>'+row(['H'],'dashboard')+row(['W'],'wallets')+row(['B'],'bills & due dates')+row(['S'],'summaries')+row(['I'],'money in')+row(['P'],'piggy banks')+row(['C'],'categories')+row(['R'],'repeating')+row(['U'],'utang')+row(['L'],'history')+row(['O'],'others')+'</div>'+
+    '<div class="lbl" style="margin-top:4px">or by side panel order</div><div>'+nav+'</div>'+
+    '<button type="button" class="btn soft sm" data-act="closemodal">Close</button>');
+}
 function renderDrawer(){
   const p=curPage(),t=today(),d=parse(t);
   $('#drawer').innerHTML='<div class="ov" data-act="drawerclose"></div><nav class="pane" aria-label="Pages">'+
-    '<div class="row g10" style="padding:4px 6px 12px">'+walletSvg(64)+'<div class="col" style="min-width:0"><span class="fr ell" style="font-size:20px">'+esc(S.title||'Money Log')+'</span><span class="sub" style="font-size:13px">'+WDL[d.getDay()]+', '+d.getDate()+' '+MONL[d.getMonth()]+'</span></div></div>'+
-    '<div class="row sb" style="padding:0 6px 6px"><span class="lbl">'+(navEdit?'tap the arrows to move':'pages')+'</span><button type="button" class="arrange'+(navEdit?' on':'')+'" data-act="navedit" aria-label="'+(navEdit?'Done arranging':'Rearrange this list')+'">'+(navEdit?'Done':ARR_IC)+'</button></div>'+
-    navPages().map((q,ix,all)=>navEdit?'<div class="navi navedit"><span class="ic" style="background:'+q.bg+'">'+(q.ic==='PIG'?pigSvg(28,'pink',false):q.ic==='TAG'?tagSvg(22):q.ic)+'</span><span class="col" style="flex:1">'+q.label+'</span><button type="button" class="mv" data-act="navmv" data-p="'+q.id+'" data-v="-1"'+(ix===0?' disabled':'')+' aria-label="Move up">'+ICON.up+'</button><button type="button" class="mv" data-act="navmv" data-p="'+q.id+'" data-v="1"'+(ix===all.length-1?' disabled':'')+' aria-label="Move down">'+ICON.down+'</button></div>':'<button type="button" class="navi'+(q.id===p||NAVGRP[p]===q.id?' on':'')+'" data-act="go" data-p="'+q.id+'"><span class="ic" style="background:'+q.bg+'">'+(q.ic==='PIG'?pigSvg(28,'pink',false):q.ic==='TAG'?tagSvg(22):q.ic)+'</span><span class="col">'+q.label+'<small>'+q.sub+'</small></span></button>').join('')+
-    '<div style="flex:1"></div><div class="row sb" style="padding:10px 6px 0"><span class="sub" style="font-size:12px">money left</span><span class="fr">'+peso(cashOnHand())+'</span></div><div class="sub" style="font-size:11px;padding:4px 6px 0;opacity:.8">Money Log v'+APP_VERSION+'</div></nav>';
+    '<div class="row g10 dhead" style="padding:4px 6px 12px">'+walletSvg(64)+'<div class="col" style="min-width:0"><span class="fr ell" style="font-size:20px">'+esc(S.title||'Money Log')+'</span><span class="sub" style="font-size:13px">'+WDL[d.getDay()]+', '+d.getDate()+' '+MONL[d.getMonth()]+'</span></div></div>'+
+    '<button type="button" class="btn sm railadd" data-act="logtoday" title="Add expense (N)"><span class="fr" style="font-size:20px">+</span><span class="rl"> Add expense</span></button>'+
+    '<div class="row sb darr" style="padding:0 6px 6px"><span class="lbl">'+(navEdit?'tap the arrows to move':'pages')+'</span><button type="button" class="arrange'+(navEdit?' on':'')+'" data-act="navedit" aria-label="'+(navEdit?'Done arranging':'Rearrange this list')+'">'+(navEdit?'Done':ARR_IC)+'</button></div>'+
+    navPages().map((q,ix,all)=>navEdit?'<div class="navi navedit"><span class="ic" style="background:'+q.bg+'">'+(q.ic==='PIG'?pigSvg(28,'pink',false):q.ic==='TAG'?tagSvg(22):q.ic)+'</span><span class="col" style="flex:1">'+q.label+'</span><button type="button" class="mv" data-act="navmv" data-p="'+q.id+'" data-v="-1"'+(ix===0?' disabled':'')+' aria-label="Move up">'+ICON.up+'</button><button type="button" class="mv" data-act="navmv" data-p="'+q.id+'" data-v="1"'+(ix===all.length-1?' disabled':'')+' aria-label="Move down">'+ICON.down+'</button></div>':'<button type="button" class="navi'+(q.id===p||NAVGRP[p]===q.id?' on':'')+'" data-act="go" data-p="'+q.id+'" title="'+q.label+(ix<9?' ('+(ix+1)+')':'')+'"><span class="ic" style="background:'+q.bg+'">'+(q.ic==='PIG'?pigSvg(28,'pink',false):q.ic==='TAG'?tagSvg(22):q.ic)+'</span><span class="col">'+q.label+'<small>'+q.sub+'</small></span></button>').join('')+
+    '<div style="flex:1"></div><button type="button" class="linkbtn dkeys" style="align-self:flex-start;font-size:12px;padding:0 6px" data-act="keys">⌨ keyboard shortcuts</button><div class="row sb dfoot" style="padding:10px 6px 0"><span class="sub" style="font-size:12px">money left</span><span class="fr">'+peso(cashOnHand())+'</span></div><div class="sub dfoot" style="font-size:11px;padding:4px 6px 0;opacity:.8">Money Log v'+APP_VERSION+'</div></nav>';
 }
 function openDrawer(){drawerOpen=true;renderDrawer();const d=$('#drawer');d.className='';void d.offsetWidth;requestAnimationFrame(()=>requestAnimationFrame(()=>d.className='open'));}
-function closeDrawer(){drawerOpen=false;navEdit=false;$('#drawer').className='';}
+function closeDrawer(){drawerOpen=false;navEdit=false;if(WIDE()){renderDrawer();$('#drawer').className='open still';return;}$('#drawer').className='';}
 function renderCal(anim){
   const w=$('#cal');
   if(!calOpen){w.innerHTML='';return;}
@@ -1130,6 +1202,7 @@ P.home={
           if(!f)return tile('bills',billSvg(24),'Bills due','all paid','nothing to tick ✿','#FDEFD9');
           const late=f.date<t;return tile('bills',billSvg(24),'Bills due',esc(pesoShort(f.amt)),esc(f.name.replace(/ bill$/,''))+' · '+(late?'overdue!':billWhen(f.date).replace('due ','')),'#FDEFD9',late||f.date===t?'var(--neg)':'');})()+
       '</div>'+
+      (WIDE()?upCal(false)+upListCard():'')+
       '';
   }
 };
@@ -1213,7 +1286,7 @@ P.money={
       return '<div class="card tap" role="button" tabindex="0" data-act="opencard" data-id="'+c.id+'" style="padding:14px 16px"><div class="row g12"><span class="cc-chip" style="background:'+c.color+'"></span><div class="col" style="flex:1;min-width:0"><span class="fr ell">'+esc(c.name)+'</span><span class="sub ell" style="font-size:13px'+(owe&&daysBetween(t,i.prev.due)<=3?';color:var(--neg)':'')+'">'+sub+'</span>'+(sub2?'<span class="sub ell" style="font-size:12px">'+sub2+'</span>':'')+'</div><span class="col" style="align-items:flex-end;flex:none"><span class="mid" style="font-size:19px;white-space:nowrap">'+peso(owe?i.prevAmt-i.paid:i.ready?i.curAmt:i.month)+'</span><span class="sub" style="font-size:11px">'+(owe?'to pay':i.ready?'so far':'this month')+'</span></span><span class="go">'+ICON.chev+'</span></div>'+qStrip(c,i)+'</div>';
     }).join('');
     let flowCard='';
-    if(flowOpen){
+    if(flowOpen||WIDE()){
       const flow=(sign,bg,label,v)=>'<div class="flow"><span class="sign" style="background:'+bg+'">'+sign+'</span><span class="nm">'+label+'</span><span class="fr" style="font-weight:500">'+peso(v)+'</span></div>';
       let net=0;
       const blk=(type,title)=>{
@@ -1238,13 +1311,13 @@ P.money={
         (unassigned?'<div class="warn" style="margin-top:10px;text-align:left;width:100%">'+unassigned+' expense'+(unassigned>1?'s have':' has')+' no <b>paid with</b> yet, so '+(unassigned>1?'they aren\'t':'it isn\'t')+' counted here.</div>':'')+
         (!S.income.length?'<div class="warn" style="margin-top:10px;text-align:left;width:100%">add your money in (salary, allowance, starting cash) so this number is right ✿ <button type="button" class="linkbtn" style="color:var(--ink)" data-act="go" data-p="income">go to money in '+ICON.chev+'</button></div>':'')+'</div>'+
       '<div class="ttl" style="margin:6px 4px -6px;font-size:18px">Credit cards</div>'+
-      '<button type="button" class="btn soft sm" data-act="cardcal" aria-expanded="'+cardCal+'">📅 '+(cardCal?'hide':'show')+' card & payment calendar '+(cardCal?'▴':'▾')+'</button>'+
-      '<div class="coll'+(cardCal?' open':'')+'" id="cardcoll"><div><div>'+upCal()+'</div></div></div>'+
+      '<button type="button" class="btn soft sm mobonly" data-act="cardcal" aria-expanded="'+cardCal+'">📅 '+(cardCal?'hide':'show')+' card & payment calendar '+(cardCal?'▴':'▾')+'</button>'+
+      (WIDE()?'':'<div class="coll'+(cardCal||WIDE()?' open':'')+'" id="cardcoll"><div><div>'+upCal()+'</div></div></div>')+
       (cards||'<div class="card" style="text-align:center"><p class="sub" style="margin:0 0 12px">set a payment method to <b>CREDIT</b> in settings and it shows up here.</p><button type="button" class="btn soft" data-act="go" data-p="settings">Open settings</button></div>')+
       '<div class="ttl" style="margin:6px 4px -6px;font-size:18px">Your wallets</div>'+
-      '<div class="card"><div class="sub" style="font-size:13px">tap one to move money</div><div style="margin-top:4px">'+group('💵','Cash',cT,cashW)+group('📱','E-wallets & bank',eT,eW)+'</div>'+
+      '<div class="card"><div class="ttl wideonly">Your wallets</div><div class="sub" style="font-size:13px">tap one to move money</div><div style="margin-top:4px">'+group('💵','Cash',cT,cashW)+group('📱','E-wallets & bank',eT,eW)+'</div>'+
         '<button type="button" class="btn sm soft" style="margin-top:12px" data-act="transfer">'+ICON.swap+' Move money</button></div>'+
-      '<button type="button" class="btn soft" data-act="flowtoggle" aria-expanded="'+flowOpen+'">📊 '+(flowOpen?'hide':'see')+' how your wallets moved '+(flowOpen?'▴':'▾')+'</button>'+flowCard;
+      '<button type="button" class="btn soft mobonly" data-act="flowtoggle" aria-expanded="'+flowOpen+'">📊 '+(flowOpen?'hide':'see')+' how your wallets moved '+(flowOpen?'▴':'▾')+'</button>'+flowCard+(WIDE()?upCal():'');
   }
 };
 
@@ -1282,7 +1355,7 @@ P.card={
     const pmHtml=pm.map(m=>{const si=m.stmt?cycleKey(c,m.stmt):cycleAt(c,m.date);return '<div class="tx"><span class="sign" style="width:24px;height:24px;font-size:12px;background:#E4F4E9">✓</span><span class="col" style="flex:1;min-width:0"><span class="ell">from '+esc(refInfo(m.from).name)+'</span><span class="sub ell" style="font-size:12px">'+shortDay(m.date)+(m.ts?' · '+clock(m.ts):'')+(m.stmt?' · bill '+shortDay(si.start)+' – '+shortDay(si.end):'')+'</span></span><span class="fr" style="font-weight:500">'+peso(m.amt)+'</span></div>';}).join('');
     const tabs='<div class="seg full" style="margin-top:0">'+[['st','Statements'],['pay','Payments made']].map(([k,l])=>'<button type="button" class="'+(ccTab===k?'on':'')+'" data-act="cctab" data-v="'+k+'">'+l+'</button>').join('')+'</div>';
     const bc=bestCard(),bestNote=bc&&bc.c.id===c.id?'<div class="warn row g8" style="background:#E4F4E9;border-color:#9CD3B0"><span class="best"><i></i>best to use today</span><span style="flex:1;font-size:13px">anything you charge today is due <b>'+shortDay(bc.due)+'</b>, the latest of your cards ('+daysBetween(t,bc.due)+' days away).</span></div>':'';
-    return hero+bill+cyc+'<div class="card">'+tabs+'<div style="margin-top:8px">'+(ccTab==='st'?(hist||'<div class="empty sub">no older statements yet</div>'):(pmHtml||'<div class="empty sub">no payments recorded yet. tick <b>paid</b> on a bill to add one.</div>'))+'</div></div>'+
+    return hero+bill+cyc+(WIDE()?'<div class="card"><div class="ttl">Statements</div><div style="margin-top:6px">'+(hist||'<div class="empty sub">no older statements yet</div>')+'</div></div><div class="card"><div class="ttl">Payments made</div><div style="margin-top:6px">'+(pmHtml||'<div class="empty sub">no payments recorded yet. tick <b>paid</b> on a bill to add one.</div>')+'</div></div>':'<div class="card">'+tabs+'<div style="margin-top:8px">'+(ccTab==='st'?(hist||'<div class="empty sub">no older statements yet</div>'):(pmHtml||'<div class="empty sub">no payments recorded yet. tick <b>paid</b> on a bill to add one.</div>'))+'</div></div>')+
       '<div class="seg full" style="margin-top:0">'+[[0,'Just this card'],[1,'All payments']].map(([v,l])=>'<button type="button" class="'+((ccAll?1:0)===v?'on':'')+'" data-act="ccall" data-v="'+v+'">'+l+'</button>').join('')+'</div>'+upCal(undefined,ccAll?null:c.id);
   }
 };
@@ -1778,8 +1851,8 @@ P.lists={
       '<button type="button" class="xbtn" aria-label="Delete '+esc(p.name)+'" data-act="delpay" data-id="'+p.id+'">'+ICON.x+'</button></div>').join('');
     const addRow=(id,ph,act)=>'<div class="row g8" style="margin-top:10px"><input class="inp" id="'+id+'" placeholder="'+ph+'" maxlength="24" enterkeyhint="done"><button type="button" class="ibtn" style="width:46px;height:46px;background:var(--butter)" data-act="'+act+'" aria-label="Add"><span class="fr" style="font-size:22px">+</span></button></div>';
     const seg='<div class="seg full" style="margin-top:0">'+[['cat','Categories'],['pay','Payment methods']].map(([k,l])=>'<button type="button" class="'+(listTab===k?'on':'')+'" data-act="listtab" data-v="'+k+'">'+l+'</button>').join('')+'</div>';
-    return seg+(listTab==='cat'?'<div class="card stitch"><div class="ttl">Spent on</div><span class="sub">tap a circle to change its colour, tap a name to rename it</span><div style="margin-top:8px">'+cats+'</div>'+addRow('newcat','new category…','addcat')+'</div>':
-      '<div class="card stitch"><div class="ttl">Paid with</div><span class="sub">tap the tag to switch type. <b>CASH</b> and <b>E-WALLET</b> (use this for bank & debit too) each get their own balance. <b>CREDIT</b> cards go to a monthly bill.</span><div style="margin-top:8px">'+pays+'</div>'+addRow('newpay','new payment method…','addpay')+'</div>')+
+    const _lc='<div class="card stitch"><div class="ttl">Spent on</div><span class="sub">tap a circle to change its colour, tap a name to rename it</span><div style="margin-top:8px">'+cats+'</div>'+addRow('newcat','new category…','addcat')+'</div>',_lp='<div class="card stitch"><div class="ttl">Paid with</div><span class="sub">tap the tag to switch type. <b>CASH</b> and <b>E-WALLET</b> (use this for bank & debit too) each get their own balance. <b>CREDIT</b> cards go to a monthly bill.</span><div style="margin-top:8px">'+pays+'</div>'+addRow('newpay','new payment method…','addpay')+'</div>';
+    return (WIDE()?_lc+_lp:seg+(listTab==='cat'?_lc:_lp))+
       '<div class="sub" style="text-align:center;font-size:13px">deleting one keeps your old expenses. it just stops showing up in the lists.</div>';
   }
 };
@@ -1806,6 +1879,7 @@ P.settings={
         '<div class="setrow"><span class="sub">currency</span><select class="sel" style="height:40px" data-in="cur">'+curOpts+'</select></div>'+
         '<div class="setrow"><span class="sub">week starts</span><div class="seg"><button type="button" class="'+(S.weekSun?'':'on')+'" data-act="weekstart" data-v="mon">Monday</button><button type="button" class="'+(S.weekSun?'on':'')+'" data-act="weekstart" data-v="sun">Sunday</button></div></div></div>'+
       '<button type="button" class="btn soft" style="justify-content:flex-start;gap:12px" data-act="go" data-p="lists">'+tagSvg(22)+'<span style="flex:1;text-align:left">Edit categories & payment methods</span>'+ICON.chev+'</button>'+
+      '<button type="button" class="btn soft" style="justify-content:flex-start;gap:12px" data-act="keys"><span style="font-size:20px">⌨</span><span style="flex:1;text-align:left">Keyboard shortcuts</span>'+ICON.chev+'</button>'+
       '<button type="button" class="btn soft" style="justify-content:flex-start;gap:12px" data-act="navarrange">'+ARR_IC+'<span style="flex:1;text-align:left">Rearrange the side panel</span>'+ICON.chev+'</button>'+
       '<div class="hidden"><div class="ttl">Spent on</div><span class="sub">tap a circle to change its colour · tap a name to rename</span><div style="margin-top:8px">'+cats+'</div>'+addRow('newcat','new category…','addcat')+'</div>'+
       '<div class="hidden"><div class="ttl">Paid with</div><span class="sub">tap the tag to switch type. <b>CASH</b> and <b>E-WALLET</b> (use this for bank & debit too) each get their own balance. <b>CREDIT</b> cards go to a monthly bill.</span><div style="margin-top:8px">'+pays+'</div>'+addRow('newpay','new payment method…','addpay')+'</div>'+
@@ -1843,7 +1917,7 @@ function render(){
   if(p!==lastPage){app.classList.remove('swap');void app.offsetWidth;app.classList.add('swap');clearTimeout(render.t);render.t=setTimeout(()=>app.classList.remove('swap'),600);lastPage=p;}
   renderCal(false);
   renderNav();
-  if(drawerOpen){renderDrawer();$('#drawer').className='open still';}
+  if(drawerOpen||WIDE()){renderDrawer();$('#drawer').className='open still';}
   justAdded.clear();
 }
 function rerender(){const y=window.scrollY;render();window.scrollTo(0,y);}
@@ -2044,7 +2118,7 @@ function expModal(id,date,pre){
     errLine('xc_err')+
     '<div class="grid2 mfoot"><button type="button" class="btn soft" data-act="closemodal">Cancel</button><button type="button" class="btn sm" data-act="savexp">'+(id?'Save':'Add')+'</button></div>'+
     (id?'<button type="button" class="linkbtn" style="align-self:center;color:var(--neg)" data-act="delexp">'+ICON.x+' delete this expense</button>':''),expDirty);
-  setTimeout(updTags,30);
+  setTimeout(()=>{if(WIDE()){const w=$('#xc_tags');if(w)w.classList.add('open');if(!xf.cat)catDD(true);}updTags();},30);
 }
 function stackCard(title,items,total){
   return '<div class="col g8"><span class="lbl">'+title+'</span><div class="sbar">'+items.map(it=>'<i style="flex:'+it.v+' 1 0;background:'+it.color+'" title="'+esc(it.name)+'"></i>').join('')+'</div>'+
@@ -2229,6 +2303,7 @@ function handleAct(b,e){
     case 'qpay':{const c=payOf(id),k=b.dataset.k,si=stmtInfo(c,cycleKey(c,k));if(si.full)unPay(c,k);else if(si.cy.end>=today())toast('this bill isn\'t final yet. it closes on '+shortDay(si.cy.end));else quickPay(c,k);return;}
     case 'undo':{const f=undoFn;undoFn=null;const t=$('#toast');t.hidden=true;t.classList.remove('nudge');if(f)f();return;}
     case 'reload':location.reload();return;
+    case 'keys':keysModal();return;
     case 'billbreak':billBreak();return;
     case 'btab':billTab=b.dataset.v;rerender();return;
     case 'btick':billTick(b);return;
@@ -2519,6 +2594,8 @@ document.addEventListener('change',e=>{
 document.addEventListener('keydown',e=>{
   if(curPage()==='calc'&&$('#modal').hidden&&!(e.target.tagName==='INPUT')){const m={'*':'×','/':'÷','-':'−','+':'+','Enter':'=','=':'=','Backspace':'del','Escape':'AC','%':'%','.':'.'};const k=/^\d$/.test(e.key)?e.key:m[e.key];if(k){e.preventDefault();calcKey(k);return;}}
   if(!$('#lock').hidden){if(/^\d$/.test(e.key))pressKey(e.key);else if(e.key==='Backspace')pressKey('del');return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='Enter'&&!$('#modal').hidden){const pb=$('#modal .mfoot .btn:not(.soft)')||$('#modal .grid2 .btn:not(.soft)');if(pb){e.preventDefault();pb.click();}return;}
+  if(keyNav(e))return;
   if(e.key==='Escape'){if(drawerOpen){closeDrawer();return;}if(calOpen){closeCal();return;}if(!$('#disc').hidden){hideDiscard();return;}if(!$('#modal').hidden){tryCloseModal();return;}}
   if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.card.tap,[role=button]')){e.preventDefault();handleAct(e.target);return;}
   if(e.key!=='Enter')return;
@@ -2632,20 +2709,22 @@ P.bills={
     const t=today(),all=billItems(),todo=all.filter(x=>!x.done).sort((a,b)=>a.date.localeCompare(b.date)),done=all.filter(x=>x.done).sort((a,b)=>b.date.localeCompare(a.date));
     const soon=todo.filter(x=>x.date<=shift(t,30)),tot=soon.reduce((s,x)=>s+x.amt,0),late=todo.filter(x=>x.date<t).length;
     const grp=(title,list,tag)=>list.length?'<div class="card" style="padding:12px 16px"><div class="bgrp">'+title+(tag?'<b>'+tag+'</b>':'')+'</div><div style="margin-top:4px">'+list.map(billRow).join('')+'</div></div>':'';
-    let body;
-    if(billTab==='todo'){
+    const bodyFor=tab=>{let body;
+    if(tab==='todo'){
       const wk=shift(t,6),mEnd=t.slice(0,8)+pad2(dim(+t.slice(0,4),+t.slice(5,7)));
       body=grp(BIC.late+' Overdue',todo.filter(x=>x.date<t),late)+grp('This week',todo.filter(x=>x.date>=t&&x.date<=wk))+grp('Later this month',todo.filter(x=>x.date>wk&&x.date<=mEnd))+grp('Next month',todo.filter(x=>x.date>mEnd));
       if(!todo.length)body='<div class="card" style="text-align:center;padding:26px 16px"><span class="cute" style="font-size:24px">all caught up ✿</span><div class="sub">nothing to pay right now</div></div>';
-    }else if(billTab==='mine'){
+    }else if(tab==='mine'){
       const nxt=bl=>{const o=billOcc(bl,t,shift(t,400)).find(d=>!(bl.done&&bl.done[d]));return o;};
-      body=(S.bills||[]).length?'<div class="card" style="padding:6px 16px">'+S.bills.slice().sort((a,b)=>(nxt(a)||'9').localeCompare(nxt(b)||'9')).map(bl=>{const n=nxt(bl),c=catOf(bl.cat),p=payOf(bl.pay);
+      body=(S.bills||[]).length?'<div class="card" style="padding:6px 16px">'+(WIDE()?'<div class="ttl" style="padding-top:8px">My reminders</div>':'')+S.bills.slice().sort((a,b)=>(nxt(a)||'9').localeCompare(nxt(b)||'9')).map(bl=>{const n=nxt(bl),c=catOf(bl.cat),p=payOf(bl.pay);
         return '<button type="button" class="irow" data-act="bopen" data-kind="bill" data-id="'+bl.id+'"><span class="bchk auto" style="background:#FDEFD9">'+BIC.bell+'</span><span class="col" style="flex:1;min-width:0;gap:1px"><span class="fr ell">'+esc(bl.name)+'</span><span class="sub ell" style="font-size:12px">'+(bl.freq==='monthly'?'every month on the '+ord(+bl.due.slice(8)):'once, '+shortDay(bl.due))+(n?' · next '+shortDay(n):' · all done')+(c&&p?' · logs to '+esc(c.name):'')+'</span></span><span class="fr" style="white-space:nowrap">'+(num(bl.amt)?peso(bl.amt):'')+'</span><span class="go">'+ICON.chev+'</span></button>';}).join('')+'</div>'
         :'<div class="card" style="text-align:center;padding:22px 16px"><span class="cute" style="font-size:22px">no reminders yet</span><div class="sub">add the bills that don\'t come with a card, like electricity, water or rent.</div></div>';
     }else body=done.length?grp('Done lately',done):'<div class="card empty sub">nothing ticked off yet</div>';
+    return body;};
+    const body=WIDE()?bodyFor('todo')+bodyFor('done')+bodyFor('mine'):bodyFor(billTab);
     return '<div class="card stitch tap" role="button" tabindex="0" data-act="billbreak" style="background:#FDEFD9"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:2px"><span class="cute" style="font-size:24px">bills & due dates</span>'+
         '<span class="big" style="font-size:32px">'+peso(tot)+'</span><span class="sub">due in the next 30 days'+(late?' · <span class="negc">'+late+' overdue</span>':'')+'</span><span class="sub" style="font-size:12px">tap to see the breakdown '+ICON.chev+'</span></div>'+billSvg(78)+'</div></div>'+
-      '<div class="seg full" style="margin-top:0">'+[['todo','To do'],['done','Done'],['mine','My reminders']].map(([k,l])=>'<button type="button" class="'+(billTab===k?'on':'')+'" data-act="btab" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+
+      '<div class="seg full mobonly" style="margin-top:0">'+[['todo','To do'],['done','Done'],['mine','My reminders']].map(([k,l])=>'<button type="button" class="'+(billTab===k?'on':'')+'" data-act="btab" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+
       body+
       '<button type="button" class="btn" data-act="newbill">+ Add a bill reminder</button>'+
       '<div class="sub" style="text-align:center;font-size:12px;margin-top:-4px">card bills and repeating payments show up here on their own. ticking a card bill pays it from your cash.</div>';
@@ -2710,7 +2789,7 @@ const bioName=()=>isApple()?'Face ID / Touch ID':'fingerprint / face unlock';
    - works offline: changes wait on this device and go up when you're back
    - a full snapshot goes to the cloud once a day, kept for 3 weeks
    ===================================================================== */
-const APP_VERSION='15',APP_DATE='8 Oct 2026';
+const APP_VERSION='16',APP_DATE='9 Oct 2026';
 const CLOUD={url:'https://jnbqymfqhswcgmrdoccp.supabase.co',key:'sb_publishable_K4wTiKuZYQXVjD74Rt1SrA_N68JpAHx'};   // filled in once your Supabase project exists
 const AKEY='moneylog-auth',YKEY='moneylog-sync',SEP='\u0001';
 const ARR=['cats','pays','entries','income','moves','pigs','utang','recs','trash','challenges','bills'];
