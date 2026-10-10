@@ -1,6 +1,6 @@
 /* Money Log offline helper: keeps the app on the phone so it opens with no internet.
    Bump VERSION whenever index.html changes so phones pick up the update. */
-const VERSION='moneylog-v16';
+const VERSION='moneylog-v17';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(VERSION).then(c=>Promise.all(SHELL.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting()));
