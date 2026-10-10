@@ -55,5 +55,6 @@ create policy "own snapshots" on public.snapshots for all to authenticated
 
 -- 5. Let logged-in users reach the tables (logged-out visitors get nothing).
 revoke all on public.items, public.snapshots from anon;
+revoke all on public.items, public.snapshots from authenticated;
 grant select, insert, update, delete on public.items, public.snapshots to authenticated;
 grant usage, select on all sequences in schema public to authenticated;
