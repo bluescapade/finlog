@@ -549,7 +549,7 @@ button{-webkit-user-select:none;user-select:none}
 .hdr{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:4px 2px 0;min-height:44px}
 .hdr .ht{display:flex;flex-direction:column;gap:1px;min-width:0}
 .hdr h1{margin:0;font-family:'Fredoka',sans-serif;font-weight:600;font-size:31px;line-height:1.12;letter-spacing:-.3px;overflow-wrap:anywhere}
-.hdr.sub h1{font-size:27px}
+.hdr.psh h1{font-size:27px}
 .hdr .pre{font-size:14px;color:var(--soft);font-weight:700;display:flex;align-items:center;gap:7px}
 .hdr .acts{display:flex;gap:8px;flex:none;align-items:center}
 .hpill{height:40px;border-radius:20px;border:1.5px solid var(--line2);background:var(--card);display:inline-flex;align-items:center;gap:6px;padding:0 14px;font-family:'Fredoka',sans-serif;font-weight:500;font-size:15px;color:var(--ink)}
@@ -722,6 +722,8 @@ html.locked,html.locked body{overscroll-behavior:none}
   #app{padding:calc(14px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
   #app>.hdr,#app>.navrow,#app>.actseg,#app>.spanall{column-span:all}
   #app>.hdr{max-width:none}
+  #bnav{display:none!important}
+  #toast{bottom:calc(24px + env(safe-area-inset-bottom))!important}
   #app>.navrow{margin:-6px 0 0}
   #modal .card{max-width:460px;border-radius:26px}
 }
@@ -898,7 +900,7 @@ function upCal(withSummary,cid){
     '<div class="legend"><span><i class="mk" style="background:#B49AE6"></i>repeating</span><span><i class="mk cut"></i>eSOA posts</span><span><i class="mk due"></i>card due</span></div>'+
     (sum1?'<div style="margin-top:10px;border-top:1px solid var(--hair);padding-top:8px"><div class="qchips">'+[['all','Everything'],['rec','Repeating'],['card','Card dates']].map(([k,l])=>'<button type="button" class="qchip'+(upF===k?' on':'')+'" data-act="upf" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+sum1+'</div>':'')+'</div>';
 }
-function upListCard(cid){return '<div class="card"><div class="ttl">Coming up</div><div class="qchips" style="margin-top:8px">'+[['all','Everything'],['rec','Repeating'],['card','Card dates']].map(([k,l])=>'<button type="button" class="qchip'+(upF===k?' on':'')+'" data-act="upf" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+upMonthList(cid)+'</div>';}
+function upListCard(cid){return '<div class="card"><div class="ttl">Coming Up</div><div class="qchips" style="margin-top:8px">'+[['all','Everything'],['rec','Repeating'],['card','Card dates']].map(([k,l])=>'<button type="button" class="qchip'+(upF===k?' on':'')+'" data-act="upf" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+upMonthList(cid)+'</div>';}
 function upDayModal(d){
   const ev=eventsBetween(d,d,null).filter(upKeep),sp=S.entries.filter(e=>e.date===d&&num(e.amt)>0),tot=sp.reduce((a,e)=>a+num(e.amt),0),t=today();
   const row=e=>{const dot=e.type==='rec'?'<i class="mk" style="background:'+e.color+';flex:none"></i>':e.type==='cut'?'<i class="mk cut" style="flex:none"></i>':'<i class="mk due" style="flex:none"></i>';
@@ -909,7 +911,7 @@ function upDayModal(d){
   openModal('<div class="col" style="gap:2px"><span class="cute" style="font-size:22px">'+(d===t?'today':niceDay(d))+'</span><span class="sub">'+(ev.length?ev.length+' thing'+(ev.length>1?'s':'')+' on this day':'nothing scheduled')+'</span></div>'+
     '<div>'+ev.map(row).join('')+'</div>'+
     (sp.length?'<div class="chip" style="justify-content:space-between"><span>spent that day</span><b>'+peso(tot)+'</b></div>':'')+
-    '<div class="grid2"><button type="button" class="btn soft sm" data-act="closemodal">Close</button><button type="button" class="btn sm" data-act="pick" data-d="'+d+'">Open day '+ICON.chev+'</button></div>');
+    '<div class="grid2"><button type="button" class="btn soft sm" data-act="closemodal">Close</button><button type="button" class="btn sm" data-act="pick" data-d="'+d+'">Open Day '+ICON.chev+'</button></div>');
 }
 function upMonthList(cid){
   const [y,m]=upMonth.split('-').map(Number);
@@ -1305,7 +1307,7 @@ function topBar(page){
   else if(page==='payd')acts=ib('editone',ICON.pen,'Edit this payment method',' data-k="pays" data-id="'+paySel+'"');
   else if(page==='repeat')acts=hp('addrec',TABIC.plusS,'Add');
   const back=root?'':'<div class="navrow"><button type="button" class="backlink" data-act="back">'+TABIC.back+'<span class="ell">'+esc(backLabel(page))+'</span></button></div>';
-  return back+'<div class="hdr'+(root?'':' sub')+'"><div class="ht">'+(pre?'<span class="pre">'+pre+'</span>':'')+'<h1>'+title+'</h1></div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>';
+  return back+'<div class="hdr'+(root?'':' psh')+'"><div class="ht">'+(pre?'<span class="pre">'+pre+'</span>':'')+'<h1>'+title+'</h1></div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>';
 }
 function actSeg(){const m=curPage()==='day'?'day':sumMode;return '<div class="seg full actseg" role="tablist">'+[['day','Day'],['week','Week'],['month','Month'],['year','Year']].map(([k,l])=>'<button type="button" class="'+(m===k?'on':'')+'" data-act="actmode" data-v="'+k+'">'+l+'</button>').join('')+'</div>';}
 const NAVGRP={stmt:'cards',bills:'more',lists:'settings',payd:'cats',calc:'more',card:'money',cat:'cats',transfers:'more',budgets:'more',streaks:'more',split:'more',activity:'more',utang:'more',repeat:'more',search:'more',panic:'more'};
@@ -1356,7 +1358,7 @@ function keyNav(e){
 function keysModal(){
   const row=(keys,what)=>'<div class="krow"><span class="kk">'+keys.map(x=>'<kbd>'+x+'</kbd>').join('')+'</span><span style="flex:1">'+what+'</span></div>';
   const nav=navPages().slice(0,9).map((q,i)=>row([String(i+1)],q.label)).join('');
-  openModal('<span class="fr" style="font-size:20px">⌨ keyboard shortcuts</span><span class="sub" style="font-size:13px">for your iPad or laptop keyboard. they pause while you\'re typing in a box.</span>'+
+  openModal('<span class="fr" style="font-size:20px">Keyboard Shortcuts</span><span class="sub" style="font-size:13px">for your iPad or laptop keyboard. they pause while you\'re typing in a box.</span>'+
     '<div>'+row(['N'],'add an expense')+row(['T'],'today')+row(['←','→'],'previous / next day or week')+row(['⌘','↵'],'save the popup you\'re in')+row(['Esc'],'close a popup')+row(['/'],'search')+row([','],'settings')+row(['?'],'this list')+'</div>'+
     '<div class="lbl" style="margin-top:4px">jump to a page</div><div>'+row(['H'],'dashboard')+row(['W'],'wallets')+row(['B'],'bills & due dates')+row(['S'],'summaries')+row(['I'],'money in')+row(['P'],'piggy banks')+row(['C'],'categories')+row(['R'],'repeating')+row(['U'],'utang')+row(['L'],'history')+row(['O'],'others')+'</div>'+
     '<div class="lbl" style="margin-top:4px">or by side panel order</div><div>'+nav+'</div>'+
@@ -1369,7 +1371,7 @@ function renderDrawer(){
     '<button type="button" class="btn sm railadd" data-act="logtoday" title="Add expense (N)"><span class="fr" style="font-size:20px">+</span><span class="rl"> Add expense</span></button>'+
     '<div class="row sb darr" style="padding:0 6px 6px"><span class="lbl">'+(navEdit?'tap the arrows to move':'pages')+'</span><button type="button" class="arrange'+(navEdit?' on':'')+'" data-act="navedit" aria-label="'+(navEdit?'Done arranging':'Rearrange this list')+'">'+(navEdit?'Done':ARR_IC)+'</button></div>'+
     navPages().map((q,ix,all)=>navEdit?'<div class="navi navedit"><span class="ic" style="background:'+q.bg+'">'+(q.ic==='PIG'?pigSvg(28,'pink',false):q.ic==='TAG'?tagSvg(22):q.ic==='CARD'?ICON.card:q.ic==='BILL'?billSvg(22):q.ic)+'</span><span class="col" style="flex:1">'+q.label+'</span><button type="button" class="mv" data-act="navmv" data-p="'+q.id+'" data-v="-1"'+(ix===0?' disabled':'')+' aria-label="Move up">'+ICON.up+'</button><button type="button" class="mv" data-act="navmv" data-p="'+q.id+'" data-v="1"'+(ix===all.length-1?' disabled':'')+' aria-label="Move down">'+ICON.down+'</button></div>':'<button type="button" class="navi'+(q.id===p||NAVGRP[p]===q.id||(q.id==='day'&&p==='sum')?' on':'')+'" data-act="go" data-p="'+q.id+'" title="'+q.label+(ix<9?' ('+(ix+1)+')':'')+'"><span class="ic" style="background:'+q.bg+'">'+(q.ic==='PIG'?pigSvg(28,'pink',false):q.ic==='TAG'?tagSvg(22):q.ic==='CARD'?ICON.card:q.ic==='BILL'?billSvg(22):q.ic)+'</span><span class="col">'+q.label+'<small>'+q.sub+'</small></span></button>').join('')+
-    '<div style="flex:1"></div><button type="button" class="linkbtn dkeys" style="align-self:flex-start;font-size:12px;padding:0 6px" data-act="keys">⌨ keyboard shortcuts</button><div class="row sb dfoot" style="padding:10px 6px 0"><span class="sub" style="font-size:12px">'+(S.ccMode?'owe on cards':'money left')+'</span><span class="fr">'+peso(S.ccMode?creditCards().reduce((a,c)=>a+cardBalance(c),0):cashOnHand())+'</span></div><div class="sub dfoot" style="font-size:11px;padding:4px 6px 0;opacity:.8">Money Log v'+APP_VERSION+'</div></nav>';
+    '<div style="flex:1"></div><button type="button" class="linkbtn dkeys" style="align-self:flex-start;font-size:12px;padding:0 6px" data-act="keys">Keyboard Shortcuts</button><div class="row sb dfoot" style="padding:10px 6px 0"><span class="sub" style="font-size:12px">'+(S.ccMode?'owe on cards':'money left')+'</span><span class="fr">'+peso(S.ccMode?creditCards().reduce((a,c)=>a+cardBalance(c),0):cashOnHand())+'</span></div><div class="sub dfoot" style="font-size:11px;padding:4px 6px 0;opacity:.8">Money Log v'+APP_VERSION+'</div></nav>';
 }
 function openDrawer(){drawerOpen=true;renderDrawer();const d=$('#drawer');d.className='';void d.offsetWidth;requestAnimationFrame(()=>requestAnimationFrame(()=>d.className='open'));}
 function closeDrawer(){drawerOpen=false;navEdit=false;if(WIDE()){renderDrawer();$('#drawer').className='open still';return;}$('#drawer').className='';}
@@ -1527,7 +1529,7 @@ function comingSec(n,days){
   return gsec('Coming Up',it.length?glist(it.slice(0,n).map(giRow).join('')):'<div class="card empty2"><span class="sub">nothing coming up in the next few weeks ✿</span></div>','<button type="button" class="gl" data-act="upmodal">calendar</button>');
 }
 function checksHtml(){
-  return creditCards().map(c=>{const cy=needsCheck(c);return cy?'<button type="button" class="gi" data-act="chkopen" data-id="'+c.id+'" data-k="'+cy.key+'" style="border:1.5px solid var(--edge);border-radius:20px;background:var(--lav2)"><span class="gic" style="background:var(--card)">'+ICON.card+'</span><span class="gt"><b>'+esc(c.name)+' '+esoaName(cy)+' is out</b><small>check it matches your bank ✿</small></span><span class="gch">'+TABIC.chev+'</span></button>':'';}).join('');
+  return creditCards().map(c=>{const cy=needsCheck(c);return cy?'<button type="button" class="gi" data-act="chkopen" data-id="'+c.id+'" data-k="'+cy.key+'" style="border:1.5px solid var(--edge);border-radius:20px;background:var(--lav2)"><span class="gic" style="background:var(--card)">'+ICON.card+'</span><span class="gt"><b style="white-space:normal">'+esc(c.name)+' '+esoaName(cy)+' is out</b><small>check it matches your bank ✿</small></span><span class="gch">'+TABIC.chev+'</span></button>':'';}).join('');
 }
 function budgetWarn(){const ob=overBudgets();return ob.length?'<div class="warn row g8" data-act="go" data-p="budgets" role="button" tabindex="0" style="cursor:pointer">'+budgetSvg(22)+'<span style="flex:1">'+esc(ob[0].c.name)+' is over its '+(ob[0].per==='week'?'weekly':'monthly')+' budget by <b>'+peso(ob[0].over)+'</b>'+(ob.length>1?' (+'+(ob.length-1)+' more)':'')+'</span>'+ICON.chev+'</div>':'';}
 function thisMonthSec(){
@@ -1648,18 +1650,18 @@ P.sum={
     if(sumMode==='week'){
       const ws=sumWeek,we=shift(ws,6);isCur=ws===cw;label=shortDay(ws)+' – '+shortDay(we);inP=d=>d>=ws&&d<=we;
       const pws=shift(ws,-7),pcut=isCur?shift(pws,daysBetween(ws,t)):shift(pws,6);prevP=d=>d>=pws&&d<=pcut;prevLabel=isCur?'the same days last week':'the week before';
-      chart=weekBars(ws);act='sw';days=isCur?daysBetween(ws,t)+1:7;caption='week total';bg='var(--pink2)';chartT='Day by day';
+      chart=weekBars(ws);act='sw';days=isCur?daysBetween(ws,t)+1:7;caption='week total';bg='var(--pink2)';chartT='Day by Day';
     }else if(sumMode==='month'){
       const vm=viewMonth,[y,m]=vm.split('-').map(Number);isCur=vm===tm;label=MONL[m-1]+' '+y;inP=d=>d.startsWith(vm);
       const lm=monthShift(vm,-1),lmCut=isCur?lm+'-'+pad2(Math.min(+t.slice(8),dim(+lm.slice(0,4),+lm.slice(5)))):lm+'-31';prevP=d=>d.startsWith(lm)&&d<=lmCut;prevLabel=isCur?MON[+lm.slice(5)-1]+' 1–'+(+lmCut.slice(8)):MONL[+lm.slice(5)-1];
-      chart=dayBarsMonth(vm);act='vm';days=isCur?+t.slice(8):dim(y,m);caption=MON[m-1].toLowerCase()+' total';bg='var(--mint2)';chartT='Each day';
+      chart=dayBarsMonth(vm);act='vm';days=isCur?+t.slice(8):dim(y,m);caption=MON[m-1].toLowerCase()+' total';bg='var(--mint2)';chartT='Each Day';
     }else{
       const Y=viewYear;isCur=Y===curY;label=String(Y);inP=d=>d.startsWith(Y+'-');
       const cut=(Y-1)+t.slice(4);prevP=d=>d.startsWith((Y-1)+'-')&&(!isCur||d<=cut);prevLabel=isCur?'this time last year':String(Y-1);
       const tots=[...Array(12)].map((_,i)=>sumWhere(e=>e.date.startsWith(Y+'-'+pad2(i+1))));
       const saves=[...Array(12)].map((_,i)=>savedIn(d=>d.startsWith(Y+'-'+pad2(i+1))));
       const max=Math.max(...tots,1);
-      chart=monthBars(Y,tots);act='vy';days=isCur?daysBetween(Y+'-01-01',t)+1:(Y%4?365:366);caption=Y+' total';bg='var(--blue2)';chartT='Each month';
+      chart=monthBars(Y,tots);act='vy';days=isCur?daysBetween(Y+'-01-01',t)+1:(Y%4?365:366);caption=Y+' total';bg='var(--blue2)';chartT='Each Month';
       extra='<div class="card"><div class="ttl">Months <span class="sub">tap one to open it</span></div><div class="mgrid" style="margin-top:12px">'+tots.map((v,i)=>{const ym=Y+'-'+pad2(i+1),fut=ym>tm,sv=saves[i];
         return '<button type="button" class="mbox'+(ym===tm?' cur':'')+'" data-act="openmonth" data-m="'+ym+'"'+(fut?' disabled':'')+'><span class="fr" style="font-size:15px">'+MON[i]+'</span><span class="fr" style="font-size:17px;font-weight:500">'+(v?esc(pesoShort(v)):'-')+'</span><span class="mb"><i style="width:'+(v/max*100).toFixed(1)+'%"></i></span><span class="mpig">'+(sv?'🐷 '+(sv>0?'+':'')+esc(pesoShort(sv)):'&nbsp;')+'</span></button>';}).join('')+'</div></div>';
     }
@@ -1667,7 +1669,7 @@ P.sum={
     const cmp=!prev?'':(b.total<=prev?'▼ '+peso(prev-b.total)+' less':'▲ '+peso(b.total-prev)+' more')+' than '+prevLabel;
     const stat=(l,v)=>'<div class="col g4" style="align-items:center;text-align:center"><span class="sub" style="font-size:12px">'+l+'</span><span class="fr" style="font-size:15px">'+v+'</span></div>';
     const modes=[['week','Week'],['month','Month'],['year','Year']].map(([k,l])=>'<button type="button" class="'+(sumMode===k?'on':'')+'" data-act="sumode" data-v="'+k+'">'+l+'</button>').join('');
-    const tabs=[['where','Where it went'],['top','Top 3'],['pay','Payments']].map(([k,l])=>'<button type="button" class="'+(sumTab===k?'on':'')+'" data-act="sumtab" data-v="'+k+'">'+l+'</button>').join('');
+    const tabs=[['where','Categories'],['top','Top 3'],['pay','Payments']].map(([k,l])=>'<button type="button" class="'+(sumTab===k?'on':'')+'" data-act="sumtab" data-v="'+k+'">'+l+'</button>').join('');
     let tv;
     if(sumTab==='where')tv=(b.slices.length>1?'<div class="row" style="margin-top:10px">'+sortBtn('sortCat')+'</div>':'')+whereInner(b,caption);
     else if(sumTab==='top')tv=podiumInner(b);
@@ -1676,11 +1678,11 @@ P.sum={
       '<div class="card stitch" style="background:'+bg+'">'+navArrows(act,isCur,'<div class="col" style="align-items:center;gap:2px;text-align:center"><span class="cute" style="font-size:22px">'+label.toLowerCase()+'</span><span class="big">'+peso(b.total)+'</span></div>')+
         (cmp?'<div class="chip" style="margin-top:12px">'+esc(cmp)+'</div>':'')+
         '<div class="grid2" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px;padding-top:12px;border-top:1px solid rgba(92,61,46,.12)">'+
-          stat('per day',esc(pesoShort(days?b.total/days:0)))+stat('expenses',b.ents.length)+stat('biggest',b.bigDay?shortDay(b.bigDay):'-')+stat('🐷 saved',esc(pesoShort(saved)))+'</div></div>'+
+          stat('per day',esc(pesoShort(days?b.total/days:0)))+stat('expenses',b.ents.length)+stat('biggest',b.bigDay?shortDay(b.bigDay):'-')+stat('saved',esc(pesoShort(saved)))+'</div></div>'+
       '<div class="card"><div class="ttl">'+chartT+' <span class="sub">tap to open</span></div><div style="margin-top:8px">'+chart+'</div></div>'+extra+
       '<div class="card stitch" style="background:var(--butter2)"><div class="ttl">Breakdown <span class="sub">'+esc(label)+'</span></div><div class="seg full">'+tabs+'</div>'+
         '<div style="background:var(--card);border-radius:18px;border:2px solid var(--line);padding:4px 12px 12px;margin-top:12px">'+tv+'</div></div>'+
-      '<button type="button" class="btn soft sm" data-act="go" data-p="cats">See every category in detail '+ICON.chev+'</button>';
+      '<button type="button" class="btn soft sm" data-act="go" data-p="cats">See Every Category in Detail '+ICON.chev+'</button>';
   }
 };
 
@@ -1801,14 +1803,14 @@ P.stmt={
     const f=e=>e.pay===c.id&&e.date>=cy.start&&e.date<=cy.end,b=breakdown(f),ents=b.ents.slice().sort((a,x)=>x.date.localeCompare(a.date)||(x.ts||0)-(a.ts||0));
     const status=si.full?'paid ✓':si.carried?'not paid · moved to the next eSOA':open?'still open · posts '+shortDay(cy.end):cy.due?(si.paid>0?'paid '+peso(si.paid)+' · ':'')+dueText(cy.due):'';
     const prev=cycleK(c,cy.k-1),next=cycleK(c,cy.k+1);
-    return '<div class="card stitch" style="background:'+(si.full?'var(--okbg)':open?'var(--lav2)':'var(--pink2)')+'"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:2px"><span class="cute" style="font-size:24px">'+esoaName(cy)+' '+cy.key.slice(0,4)+'</span><span class="sub ell">'+esc(c.name)+'</span>'+
+    return '<div class="card stitch" style="background:'+(si.full?'var(--okbg)':open?'var(--lav2)':'var(--pink2)')+'"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:2px"><span class="sub ell">'+esc(c.name)+' · '+shortDay(cy.start)+' – '+shortDay(cy.end)+'</span>'+
         '<span class="big" style="font-size:32px">'+peso(si.amt)+'</span><span class="sub">'+status+'</span></div>'+ccSvg(84,c.color)+'</div>'+
         '<div class="row g8" style="margin-top:12px;flex-wrap:wrap"><span class="chip" style="font-size:12px">'+shortDay(cy.start)+' – '+shortDay(cy.end)+'</span><span class="chip" style="font-size:12px">eSOA '+shortDay(cy.end)+'</span>'+(cy.due?'<span class="chip" style="font-size:12px">due '+shortDay(cy.due)+'</span>':'')+'</div>'+
         '<div class="row g8" style="margin-top:12px">'+(!open?'<button type="button" class="chk'+(si.full?' on':'')+'" role="checkbox" aria-checked="'+si.full+'" data-act="billpaid" data-id="'+c.id+'" data-k="'+cy.key+'"><span class="box">'+(si.full?ICON.tick:'')+'</span>paid</button>':'')+
-        '<span style="flex:1"></span><button type="button" class="tog" style="min-width:0" data-act="stmtedit" data-id="'+c.id+'" data-k="'+cy.key+'">edit this eSOA</button></div></div>'+
+        '</div></div>'+
       '<div class="row sb"><button type="button" class="arrow" data-act="openstmt" data-id="'+c.id+'" data-k="'+prev.key+'" aria-label="Previous eSOA">'+ICON.left+'</button><span class="sub">'+esoaName(prev)+' · '+esoaName(next)+'</span><button type="button" class="arrow" data-act="openstmt" data-id="'+c.id+'" data-k="'+next.key+'" aria-label="Next eSOA"'+(next.start>t?' disabled':'')+'>'+ICON.right+'</button></div>'+
       (parts.carry>0||cy.ov.amt!=null?'<div class="warn" style="font-size:13px">'+(cy.ov.amt!=null?'you set this eSOA\'s total by hand ('+peso(cy.ov.amt)+'). what you logged adds up to '+peso(b.total)+'.':'includes <b>'+peso(parts.carry)+'</b> carried over from the '+esoaName(prev)+'.')+'</div>':'')+
-      '<div class="card"><div class="ttl">Day by day <span class="sub">'+peso(b.total)+' in charges</span></div>'+cycleBars(c,cy)+'</div>'+
+      '<div class="card"><div class="ttl">Day by Day <span class="sub">'+peso(b.total)+' in charges</span></div>'+cycleBars(c,cy)+'</div>'+
       (b.total>0?'<div class="card">'+stackCard('Spent on',b.slices,b.total)+'</div>':'')+
       '<div class="card" style="padding:8px 16px 12px"><div class="ttl" style="padding-top:8px">Charges <span class="sub">'+ents.length+'</span></div>'+(ents.length?ents.map(e=>{const k=catInfo(e.cat);return '<button type="button" class="tx wrow" data-act="editexp" data-id="'+e.id+'"><span class="dot" style="width:12px;height:12px;background:'+k.color+'"></span><span class="col" style="flex:1;min-width:0"><span class="ell">'+esc(e.note||k.name)+'</span><span class="sub" style="font-size:12px">'+esc(k.name)+(e.tags&&e.tags.length?' · #'+e.tags.map(esc).join(' #'):'')+'</span></span><span class="sub" style="font-size:12px">'+shortDay(e.date)+'</span><span class="fr" style="font-weight:500;min-width:80px;text-align:right">'+peso(e.amt)+'</span></button>';}).join(''):'<div class="empty sub">no charges logged for this eSOA</div>')+'</div>'+
       (si.pays.length?'<div class="card"><div class="ttl">Payments</div>'+si.pays.map(m=>'<div class="tx"><span class="sign" style="width:24px;height:24px;font-size:12px;background:var(--okbg)">✓</span><span class="ell" style="flex:1">from '+esc(refInfo(m.from).name)+' <span class="sub" style="font-size:12px">'+shortDay(m.date)+'</span></span><span class="fr">'+peso(m.amt)+'</span></div>').join('')+'</div>':'');
@@ -1878,7 +1880,7 @@ P.activity={
       return '<div class="card" style="padding:12px 16px"><button type="button" class="wrow" style="padding:2px 0" data-act="actmon" data-m="'+(gi===0?'!':'')+g.ym+'"><span class="fr" style="font-size:18px;flex:1">'+MONL[+g.ym.slice(5)-1]+' '+g.ym.slice(0,4)+'</span><span class="sub" style="font-size:13px">'+(sp?'−'+esc(pesoShort(sp)):'')+(sp&&inn?' · ':'')+(inn?'<span class="pos">+'+esc(pesoShort(inn))+'</span>':'')+' · '+g.l.length+'</span><span class="go" style="margin-left:6px">'+(open?'▴':'▾')+'</span></button>'+(open?'<div class="enter">'+h+'</div>':'')+'</div>';}).join('');
     return '<div class="card stitch" style="background:var(--butter2)"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:2px"><span class="cute" style="font-size:22px">history</span><span class="sub">everything, newest first: spending, money in, transfers, utang, and even what you deleted.</span></div>'+historySvg(64)+'</div></div>'+chips+
       (boxes||'<div class="empty"><span class="cute" style="font-size:21px">nothing here yet</span></div>')+
-      (list.length>actN?'<button type="button" class="btn soft sm" data-act="actmore">show older</button>':'');
+      (list.length>actN?'<button type="button" class="btn soft sm" data-act="actmore">Show Older</button>':'');
   }
 };
 
@@ -1916,9 +1918,9 @@ P.cat={
     const gl=tagGroups(ents),gmax=Math.max(...gl.map(g=>g.v),1);
     const last=S.entries.filter(e=>e.cat===id&&num(e.amt)>0&&!e.rec).reduce((a,e)=>!a||e.date>a?e.date:a,null),since=last?daysBetween(last,t):null;
     return monthHead(cm,esc(c.name.toLowerCase()),total,ents.length+' expense'+(ents.length===1?'':'s')+(since!=null?' · last one '+(since===0?'today':since+' day'+(since===1?'':'s')+' ago'):''),'var(--butter2)')+
-        '<div style="margin-top:12px">'+(bud?(isCur?budBar(bv,bud.amt)+'<div class="row sb g8" style="margin-top:6px"><span class="sub" style="font-size:13px">'+budText(bv,bud.amt,bud.per)+'</span><button type="button" class="tog" style="min-width:0" data-act="setbudget" data-id="'+id+'">edit budget</button></div>':'<span class="sub" style="font-size:13px">budget: '+peso(bud.amt)+' a '+bud.per+'</span>'):'<button type="button" class="btn soft sm" data-act="setbudget" data-id="'+id+'">+ set a budget</button>')+'</div></div>'+
-      '<div class="card"><div class="ttl">Last 6 months</div>'+trendHtml(cm,e=>e.cat===id)+'</div>'+
-      (gl.length?'<div class="card"><div class="ttl">By tag</div><div style="margin-top:4px">'+gl.map(g=>'<div class="rank"><div class="row g8"><span class="ell" style="flex:1'+(g.none?';color:var(--soft)':'')+'">'+esc(g.label)+'</span><span class="sub" style="font-size:12px">×'+g.n+'</span><span class="fr" style="font-weight:500">'+peso(g.v)+'</span></div><div class="bar" style="height:10px"><i class="'+(g.v>=gmax?'full':'')+'" style="width:'+(g.v/gmax*100).toFixed(1)+'%;background:'+(g.none?'#E3CDB8':c.color)+'"></i></div></div>').join('')+'</div>'+
+        '<div style="margin-top:12px">'+(bud?(isCur?budBar(bv,bud.amt)+'<div class="row sb g8" style="margin-top:6px"><span class="sub" style="font-size:13px">'+budText(bv,bud.amt,bud.per)+'</span><button type="button" class="tog" style="min-width:0" data-act="setbudget" data-id="'+id+'">edit budget</button></div>':'<span class="sub" style="font-size:13px">budget: '+peso(bud.amt)+' a '+bud.per+'</span>'):'<button type="button" class="btn soft sm" data-act="setbudget" data-id="'+id+'">+ Set a Budget</button>')+'</div></div>'+
+      '<div class="card"><div class="ttl">Last 6 Months</div>'+trendHtml(cm,e=>e.cat===id)+'</div>'+
+      (gl.length?'<div class="card"><div class="ttl">By Tag</div><div style="margin-top:4px">'+gl.map(g=>'<div class="rank"><div class="row g8"><span class="ell" style="flex:1'+(g.none?';color:var(--soft)':'')+'">'+esc(g.label)+'</span><span class="sub" style="font-size:12px">×'+g.n+'</span><span class="fr" style="font-weight:500">'+peso(g.v)+'</span></div><div class="bar" style="height:10px"><i class="'+(g.v>=gmax?'full':'')+'" style="width:'+(g.v/gmax*100).toFixed(1)+'%;background:'+(g.none?'#E3CDB8':c.color)+'"></i></div></div>').join('')+'</div>'+
         '<div class="sub" style="font-size:12px;margin-top:8px">add tags like #starbucks or #grabfood when you log an expense and they group up here.</div></div>':'')+
       '<div class="card" style="padding:8px 16px 12px"><div class="ttl" style="padding-top:8px">Every '+esc(c.name)+' expense</div>'+(ents.length?ents.map(e=>{const p=payInfo(e.pay);return '<button type="button" class="tx wrow" data-act="editexp" data-id="'+e.id+'"><span class="col" style="flex:1;min-width:0"><span class="ell">'+esc(e.note||c.name)+'</span><span class="sub ell" style="font-size:12px">'+shortDay(e.date)+' · '+esc(p.name)+(e.tags&&e.tags.length?' · #'+e.tags.map(esc).join(' #'):'')+'</span></span><span class="fr" style="font-weight:500">'+peso(e.amt)+'</span></button>';}).join(''):'<div class="empty sub">nothing this month</div>')+'</div>';
   }
@@ -1930,8 +1932,8 @@ P.payd={
     const ents=S.entries.filter(e=>e.pay===id&&e.date.startsWith(cm)&&num(e.amt)>0).sort((a,b)=>b.date.localeCompare(a.date)||(b.ts||0)-(a.ts||0));
     const total=ents.reduce((a,e)=>a+num(e.amt),0),b=breakdown(e=>e.pay===id&&e.date.startsWith(cm));
     return monthHead(cm,esc(p.name.toLowerCase()),total,ents.length+' expense'+(ents.length===1?'':'s')+' · '+TLABEL[p.type||'cash'].toLowerCase(),'var(--blue2)')+'</div>'+
-      '<div class="card"><div class="ttl">Last 6 months</div>'+trendHtml(cm,e=>e.pay===id)+'</div>'+
-      (b.total?'<div class="card"><div class="ttl">What it paid for</div>'+whereInner(b,MON[+cm.slice(5)-1].toLowerCase()+' total')+'</div>':'')+
+      '<div class="card"><div class="ttl">Last 6 Months</div>'+trendHtml(cm,e=>e.pay===id)+'</div>'+
+      (b.total?'<div class="card"><div class="ttl">What It Paid For</div>'+whereInner(b,MON[+cm.slice(5)-1].toLowerCase()+' total')+'</div>':'')+
       '<div class="card" style="padding:8px 16px 12px"><div class="ttl" style="padding-top:8px">Every '+esc(p.name)+' expense</div>'+(ents.length?ents.map(e=>{const c=catInfo(e.cat);return '<button type="button" class="tx wrow" data-act="editexp" data-id="'+e.id+'"><span class="dot" style="width:12px;height:12px;background:'+c.color+'"></span><span class="col" style="flex:1;min-width:0"><span class="ell">'+esc(e.note||c.name)+'</span><span class="sub ell" style="font-size:12px">'+shortDay(e.date)+' · '+esc(c.name)+'</span></span><span class="fr" style="font-weight:500">'+peso(e.amt)+'</span></button>';}).join(''):'<div class="empty sub">nothing this month</div>')+'</div>';
   }
 };
@@ -1963,7 +1965,7 @@ P.budgets={
         (set.length?'<span class="big">'+set.length+' set</span><span class="sub">'+(over?'<span class="negc">'+over+' over the limit</span>':'all on track ✿')+'</span>':'<span class="sub">set a weekly or monthly limit for the categories you want to keep an eye on.</span>')+'</div>'+budgetSvg(70)+'</div>'+
         (tw||tmo?'<div class="grid2" style="margin-top:12px'+(tw&&tmo?'':';grid-template-columns:1fr')+'">'+totChip(tw,'weekly ones',dlW)+totChip(tmo,'monthly ones',dlM)+'</div>':'')+'</div>'+
       (set.length?'<div class="card" style="padding:6px 16px">'+set.map(row).join('')+'</div>':'')+
-      (unset.length?'<div class="card"><div class="ttl">Add a budget <span class="sub">tap a category</span></div><div class="pchips" style="margin-top:10px;max-height:none">'+unset.map(x=>'<button type="button" class="pchip" data-act="setbudget" data-id="'+x.c.id+'"><span class="dot" style="background:'+x.c.color+'"></span>'+esc(x.c.name)+'</button>').join('')+'</div></div>':'')+
+      (unset.length?'<div class="card"><div class="ttl">Add a Budget <span class="sub">tap a category</span></div><div class="pchips" style="margin-top:10px;max-height:none">'+unset.map(x=>'<button type="button" class="pchip" data-act="setbudget" data-id="'+x.c.id+'"><span class="dot" style="background:'+x.c.color+'"></span>'+esc(x.c.name)+'</button>').join('')+'</div></div>':'')+
       '<div class="card" style="background:var(--warmbg)"><div class="ttl">'+flameSvg(22,true)+' Challenges <span class="sub">'+(chs.length?chs.length+' going':'none yet')+'</span></div>'+
         (chs.length?'<div style="margin-top:4px">'+chs.map(chMini).join('')+'</div>':'<div class="sub" style="font-size:13px;margin-top:6px">a challenge is a stricter budget, like no starbucks for 30 days, or under ₱500 on milk tea this month.</div>')+
         '<button type="button" class="btn soft sm" style="margin-top:10px" data-act="go" data-p="streaks">'+(chs.length?'see all challenges':'start a challenge')+' '+ICON.chev+'</button></div>';
@@ -2026,7 +2028,7 @@ P.streaks={
     const cats=activeCats().map(c=>({c,s:streakData(e=>e.cat===c.id)})).sort((a,b)=>b.s.cur-a.s.cur||a.c.name.localeCompare(b.c.name));
     const msg=!all.first?'start logging and your streak shows up here':all.spentToday?'you spent today, so it starts again tomorrow':all.cur===1?'today is a no-spend day so far ✿':all.cur+' no-spend days in a row, counting today';
     return '<div class="card stitch" style="background:var(--peach2)"><div class="row g12">'+flameSvg(70,true)+'<div class="col" style="flex:1;min-width:0;gap:2px"><span class="cute" style="font-size:22px">challenges</span><span class="sub">pick something to cut back on, like starbucks or milk tea, and see how long you can go.</span></div></div></div>'+
-      '<button type="button" class="btn" data-act="newch">+ New challenge</button>'+
+      '<button type="button" class="btn" data-act="newch">+ New Challenge</button>'+
       (chs.length?chs.map(chCard).join(''):'<div class="empty"><span class="cute" style="font-size:21px">no challenges yet</span></div>')+
       '<div class="card" style="padding:12px 16px"><button type="button" class="wrow" style="padding:4px 0" data-act="autotog"><span class="fr" style="flex:1">Automatic streaks</span><span class="sub">'+(autoOpen?'hide ▴':'show ▾')+'</span></button>'+
         (autoOpen?'<div class="enter"><div class="row g12" style="padding:10px 0;border-bottom:1px solid var(--hair)">'+flameSvg(40,all.cur>0)+'<span class="col" style="flex:1;min-width:0"><span class="fr">No spending at all · '+all.cur+' day'+(all.cur===1?'':'s')+'</span><span class="sub" style="font-size:12px">'+msg+' · best '+all.best+'</span></span></div>'+
@@ -2068,9 +2070,9 @@ P.split={
       '<div class="card"><div class="ttl">Who\'s splitting</div><div class="seg full">'+modes+'</div><div style="margin-top:6px">'+rows+'</div>'+
         '<div class="row g8" style="margin-top:8px"><input class="inp" id="sp_new" maxlength="20" placeholder="add a friend…" enterkeyhint="done"><button type="button" class="ibtn" style="width:46px;height:46px;background:var(--butter)" data-act="spadd" aria-label="Add"><span class="fr" style="font-size:22px">+</span></button></div>'+sugg('sp_new',utPeople().filter(n=>!sp.people.some(x=>x.toLowerCase()===n.toLowerCase())),'spaddv')+''+
         '<div class="sub" id="sp_foot" style="font-size:13px;margin-top:10px;text-align:right"></div></div>'+
-      '<div class="card"><div class="ttl">Save it</div><div class="grid2" style="margin-top:10px"><label class="col g6"><span class="lbl">Spent on</span><select class="sel" id="sp_cat">'+opt(S.cats,sp.cat)+'</select></label><label class="col g6"><span class="lbl">You paid with</span><select class="sel" id="sp_pay">'+opt(S.pays,sp.pay)+'</select></label></div>'+
+      '<div class="card"><div class="ttl">Save It</div><div class="grid2" style="margin-top:10px"><label class="col g6"><span class="lbl">Spent on</span><select class="sel" id="sp_cat">'+opt(S.cats,sp.cat)+'</select></label><label class="col g6"><span class="lbl">You paid with</span><select class="sel" id="sp_pay">'+opt(S.pays,sp.pay)+'</select></label></div>'+
         '<label class="col g6" style="margin-top:10px"><span class="lbl">Note (optional)</span><input class="inp" id="sp_note" maxlength="40" placeholder="e.g. samgyup with the girls" value="'+esc(sp.note)+'"></label>'+
-        errLine('sp_err')+'<button type="button" class="btn" style="margin-top:6px" data-act="spsave">Log my share + add utang</button>'+
+        errLine('sp_err')+'<button type="button" class="btn" style="margin-top:6px" data-act="spsave">Log My Share + Add Utang</button>'+
         '<div class="sub" style="font-size:12px;margin-top:8px">if you paid with cash or an e-wallet, your friends\' shares come out of that wallet as utang, and go back in when they pay you.</div></div>';
   },
   update(){splitUpdate();}
@@ -2090,7 +2092,7 @@ function paydayModal(from,incAmt,auto){
     '<label class="col g6"><span class="lbl">How much</span>'+moneyField('pd_amt','')+'</label>'+
     '<div class="qchips" id="pd_chips" data-inc="'+(incAmt||0)+'"></div>'+
     '<label class="col g6"><span class="lbl">From</span><select class="sel" id="pd_from">'+refOptions(from,{noPig:true})+'</select></label>'+
-    '<div class="grid2 mfoot"><button type="button" class="btn soft" data-act="closemodal">'+(auto?'Skip':'Cancel')+'</button><button type="button" class="btn sm" data-act="savepd">Save 🐷</button></div>');
+    '<div class="grid2 mfoot"><button type="button" class="btn soft" data-act="closemodal">'+(auto?'Skip':'Cancel')+'</button><button type="button" class="btn sm" data-act="savepd">Save</button></div>');
   $('#pd_chips').innerHTML=pdChips();
 }
 
@@ -2127,7 +2129,7 @@ P.calc={
         '<div class="ckeys">'+K.map(([k,c])=>'<button type="button" class="ckey'+(c?' '+c:'')+'" data-act="ck" data-v="'+k+'" aria-label="'+(k==='del'?'delete':k)+'">'+(k==='del'?'⌫':k)+'</button>').join('')+'</div>'+
         '<span class="stk">'+flower(0,0,0,'','',0).slice(0,0)+'<svg width="46" height="46" viewBox="-12 -12 24 24" aria-hidden="true">'+flower(0,0,6.5,'#F6B8C8',INK,1.8)+'</svg></span></div>'+
       '<div class="card" style="padding:12px 16px"><div class="row sb"><span class="ttl">History</span>'+(hist?'<button type="button" class="linkbtn" data-act="chclear">clear</button>':'')+'</div>'+(hist?'<div style="margin-top:4px">'+hist+'</div><div class="sub" style="font-size:12px;margin-top:6px">tap one to use its answer again</div>':'<div class="sub" style="font-size:13px;padding:6px 0">your calculations show up here</div>')+'</div>'+
-      '<div class="card" style="padding:12px 16px"><button type="button" class="wrow" style="padding:2px 0" data-act="cref"><span class="ttl" style="flex:1">Quick reference</span><span class="sub">'+(calcRef?'hide ▴':'show ▾')+'</span></button>'+
+      '<div class="card" style="padding:12px 16px"><button type="button" class="wrow" style="padding:2px 0" data-act="cref"><span class="ttl" style="flex:1">Quick Reference</span><span class="sub">'+(calcRef?'hide ▴':'show ▾')+'</span></button>'+
         (calcRef?'<div class="enter" style="margin-top:4px">'+ref.map(([l,v])=>'<div class="tx"><span class="ell sub" style="flex:1;font-size:14px">'+esc(l)+'</span><span class="fr">'+peso(v)+'</span></div>').join('')+'</div>':'')+'</div>';
   },
   update(){calcUpdate();}
@@ -2151,7 +2153,7 @@ P.transfers={
     const st=(icon,label,v,bg,page)=>'<button type="button" class="col g4" data-act="go" data-p="'+page+'" style="align-items:center;text-align:center;border:2px solid var(--edge);border-radius:16px;background:'+bg+';padding:10px 4px;box-shadow:0 2px 0 var(--sh)"><span style="font-size:20px">'+icon+'</span><span class="sub" style="font-size:12px">'+label+'</span><span class="fr'+(v<0?' negc':'')+'" style="font-size:15px">'+esc(pesoShort(v))+'</span></button>';
     return '<div class="card stitch" style="background:var(--blue2)"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:2px"><span class="cute" style="font-size:22px">your money now</span><span class="sub">tap one to see more</span></div>'+swapSvg(80)+'</div>'+
         '<div class="grid2" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px">'+st('💵','cash',cashT,'var(--mint2)','money')+st('📱','e-wallets',eT,'var(--card)','money')+st('🐷','piggies',pT,'var(--pink2)','piggy')+'</div></div>'+
-      '<button type="button" class="btn" data-act="transfer">+ New transfer</button>'+
+      '<button type="button" class="btn" data-act="transfer">+ New Transfer</button>'+
       '<div class="card">'+navArrows('tm',isCur,'<div class="col" style="align-items:center"><span class="ttl">History</span><span class="sub">'+MONL[tmm-1]+' '+ty+'</span></div>')+
         (rows?'<div style="margin-top:6px">'+rows+'</div>':'<div class="empty"><span class="cute" style="font-size:21px">no transfers this month</span></div>')+'</div>'+
       '<div class="sub" style="text-align:center;font-size:13px">cash → e-wallet, wallet → piggy bank, and credit card bills you tick as paid all show up here</div>';
@@ -2171,7 +2173,7 @@ P.income={
     const hero='<div class="card stitch" style="background:var(--mint2)">'+navArrows('im',isCur,'<div class="col" style="align-items:center;gap:2px;text-align:center"><span class="cute" style="font-size:22px">money in · '+MONL[imm-1].toLowerCase()+'</span><span class="big">'+peso(total)+'</span><span class="sub">'+(mi.length?mi.length+' time'+(mi.length===1?'':'s')+' this month':'nothing came in yet')+'</span></div>')+'</div>';
     const brk=total?'<div class="card"><div class="ttl">Breakdown <span class="sub">'+MON[imm-1]+'</span></div><div class="col" style="gap:14px;margin-top:10px">'+stackCard('Where it came from',srcItems,total)+stackCard('Where it went',toItems,total)+'</div></div>':'';
     const running=S.income.filter(i=>i.until&&i.until>=t&&i.date<=t).sort((a,b)=>a.until.localeCompare(b.until));
-    const runHtml=running.length?'<div class="card" style="background:var(--butter2)"><div class="ttl">Still running <span class="sub">money with a spend-until date</span></div>'+running.map(inc=>{const s=periodStats(inc),pct=Math.min(100,num(inc.amt)?s.spent/num(inc.amt)*100:100);
+    const runHtml=running.length?'<div class="card" style="background:var(--butter2)"><div class="ttl">Still Running <span class="sub">money with a spend-until date</span></div>'+running.map(inc=>{const s=periodStats(inc),pct=Math.min(100,num(inc.amt)?s.spent/num(inc.amt)*100:100);
       return '<button type="button" class="irow" data-act="editinc" data-id="'+inc.id+'"><span class="col" style="flex:1;min-width:0;gap:5px"><span class="row sb g8"><span class="fr ell">'+esc(inc.src||'money in')+'</span><span class="fr'+(s.left<0?' negc':'')+'" style="white-space:nowrap">'+peso(s.left)+' left</span></span>'+
         '<div class="bar"><i class="'+(pct>=100?'full':pct<=0?'zero':'')+'" style="width:'+pct.toFixed(1)+'%;background:'+(pct>=100?'#F28BA8':'#F6B8C8')+'"></i></div>'+
         '<span class="sub" style="font-size:12px">'+peso(s.perDay)+' a day · '+s.daysLeft+' day'+(s.daysLeft===1?'':'s')+' left · '+shortDay(inc.date)+' → '+shortDay(inc.until)+'</span></span></button>';}).join('')+'</div>':'';
@@ -2185,7 +2187,7 @@ P.income={
     const hist=shownG.map(g=>'<div class="sgroup"><div class="mhead"><span>'+MONL[+g.ym.slice(5)-1]+' '+g.ym.slice(0,4)+'</span><span class="pos">+'+peso(g.tot)+'</span></div>'+g.l.map(it=>{
       if(it.x){const o=it.x.o;return '<div class="tx trash"><span class="sign" style="width:24px;height:24px;font-size:12px;background:var(--line)">×</span><span class="col" style="flex:1;min-width:0"><span class="ell">deleted · '+esc(o.src||'money in')+'</span><span class="sub ell" style="font-size:12px">'+shortDay(it.x.date)+' '+clock(it.x.ts)+' · was from '+shortDay(o.date)+'</span></span><span class="fr amtx">'+peso(o.amt)+'</span></div>';}
       const inc=it.i;return '<button type="button" class="tx wrow'+enter(inc.id)+'" data-row="'+inc.id+'" data-act="editinc" data-id="'+inc.id+'"><span class="sign" style="width:24px;height:24px;font-size:13px;background:var(--mint2)">+</span><span class="col" style="flex:1;min-width:0"><span class="ell">'+esc(inc.src||'money in')+'</span><span class="sub ell" style="font-size:12px">'+shortDay(inc.date)+' · into '+esc(refInfo(inc.to).name)+(inc.until?' · until '+shortDay(inc.until):'')+'</span></span><span class="fr pos" style="white-space:nowrap">+'+peso(inc.amt)+'</span></button>';}).join('')+'</div>').join('');
-    return hero+'<button type="button" class="btn" data-act="addinc">+ Add money in</button>'+(S.pigs.length?'<button type="button" class="btn soft sm" data-act="payday">'+pigSvg(30,'pink',false)+' Payday: send some to piggies</button>':'')+leftHtml+runHtml+brk+
+    return hero+'<button type="button" class="btn" data-act="addinc">+ Add Money In</button>'+(S.pigs.length?'<button type="button" class="btn soft sm" data-act="payday">'+pigSvg(30,'pink',false)+' Payday: send some to piggies</button>':'')+leftHtml+runHtml+brk+
       '<div class="card" style="padding:6px 16px 12px"><div class="ttl" style="padding-top:10px">History <span class="sub">tap one to edit</span></div>'+(hist||'<div class="empty"><span class="cute" style="font-size:21px">nothing yet</span></div>')+
         (groups.length>4?'<button type="button" class="btn soft sm" style="margin-top:10px" data-act="incall">'+(incAll?'show less':'show older months')+'</button>':'')+'</div>'+
       '<div class="sub" style="text-align:center;font-size:13px">tip: add the cash you have right now as "starting cash" into your wallet</div>';
@@ -2208,9 +2210,9 @@ P.piggy={
     acts.sort((a,b)=>b.date.localeCompare(a.date)||b.ts-a.ts);
     const actHtml=acts.slice(0,8).map(a=>'<div class="mv"><div class="row g6">'+a.html+'</div><div class="row sb"><span class="sub" style="font-size:13px">'+shortDay(a.date)+'</span><span class="fr" style="font-weight:500">'+peso(a.amt)+'</span></div></div>').join('');
     return hero('var(--pink2)','all your piggies',pigTotal(),S.pigs.length+' piggy bank'+(S.pigs.length===1?'':'s')+' · they grow as you save',pigSvg(92,'pink'))+
-      '<div class="card"><div class="ttl">Your piggies <span class="sub">tap one</span></div><div class="pigfield">'+(pigs||'<div class="empty sub">no piggy banks yet</div>')+'</div></div>'+
-      '<button type="button" class="btn" data-act="newpig">+ New piggy bank</button>'+
-      '<button type="button" class="btn soft sm" data-act="payday">💸 Payday shortcut</button>'+
+      '<div class="card"><div class="ttl">Your Piggies <span class="sub">tap one</span></div><div class="pigfield">'+(pigs||'<div class="empty sub">no piggy banks yet</div>')+'</div></div>'+
+      '<button type="button" class="btn" data-act="newpig">+ New Piggy Bank</button>'+
+      '<button type="button" class="btn soft sm" data-act="payday">Payday Shortcut</button>'+
       (actHtml?'<div class="card"><div class="ttl">Recent</div><div style="margin-top:4px">'+actHtml+'</div></div>':'');
   }
 };
@@ -2282,7 +2284,7 @@ P.utang={
     return '<div class="card stitch" style="background:var(--peach2)"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:6px"><span class="cute" style="font-size:22px">utang</span>'+
         '<div class="row sb g8"><span class="sub">they owe you</span><span class="fr pos" style="font-size:20px">'+peso(owed)+'</span></div>'+
         '<div class="row sb g8"><span class="sub">you owe</span><span class="fr negc" style="font-size:20px">'+peso(owe)+'</span></div></div>'+iouSvg(84)+'</div></div>'+
-      '<button type="button" class="btn" data-act="addut">+ Add utang</button>'+
+      '<button type="button" class="btn" data-act="addut">+ Add Utang</button>'+
       '<div class="seg full" style="margin-top:0">'+tabs+'</div>'+
       (list.length?list.map(card).join(''):'<div class="empty"><span class="cute" style="font-size:21px">'+(utTab==='lent'?'nobody owes you right now ✿':'you don\'t owe anyone ✿')+'</span></div>')+
       (doneHtml?'<div class="card"><div class="ttl">Settled <span class="sub">recent</span></div><div style="margin-top:4px">'+doneHtml+'</div></div>':'');
@@ -2303,7 +2305,7 @@ P.repeat={
     return '<div class="card stitch tap" role="button" tabindex="0" data-act="recbreak" style="background:var(--lav2)"><div class="row g12"><div class="col" style="flex:1;min-width:0;gap:2px"><span class="cute" style="font-size:22px">repeating</span><span class="big">'+peso(mo)+'</span><span class="sub">about this much a month · '+act.length+' active</span><span class="sub" style="font-size:12px">tap to see the breakdown '+ICON.chev+'</span></div>'+repeatSvg(84)+'</div></div>'+
 
       upCal()+
-      (list.length?'<div class="ttl" style="margin:4px 4px -6px">Your repeating expenses</div>'+list.map(card).join(''):'<div class="empty"><span class="cute" style="font-size:21px">nothing repeating yet</span><div class="sub">rent, spotify, phone load, gym…</div></div>')+
+      (list.length?'<div class="ttl" style="margin:4px 4px -6px">Your Repeating Expenses</div>'+list.map(card).join(''):'<div class="empty"><span class="cute" style="font-size:21px">nothing repeating yet</span><div class="sub">rent, spotify, phone load, gym…</div></div>')+
       '<div class="sub" style="text-align:center;font-size:13px">each one gets logged by itself on its next date, never on the day you add it. tap a circle to change its colour.</div>';
   }
 };
@@ -2319,7 +2321,7 @@ P.search={
       '<div class="col g8" style="margin-top:10px">'+
         '<label class="row g8"><span class="lbl" style="width:78px;flex:none">Month</span>'+sel('sm',srch.m,months.map(m=>[m,MONL[+m.slice(5)-1]+' '+m.slice(0,4)]),'all months')+'</label>'+
         '<label class="row g8"><span class="lbl" style="width:78px;flex:none">Spent on</span>'+sel('scat',srch.cat,S.cats.map(c=>[c.id,c.name]).concat([['none','(no category)']]),'everything')+'</label>'+
-        '<label class="row g8"><span class="lbl" style="width:78px;flex:none">Paid with</span>'+sel('spay',srch.pay,S.pays.map(p=>[p.id,p.name]).concat([['none','(no payment method)']]),'any method')+'</label></div>'+
+        '<label class="row g8"><span class="lbl" style="width:78px;flex:none">Paid With</span>'+sel('spay',srch.pay,S.pays.map(p=>[p.id,p.name]).concat([['none','(no payment method)']]),'any method')+'</label></div>'+
       '<button type="button" class="linkbtn" style="margin-top:6px" data-act="sclear">clear filters</button></div>'+
       '<div id="sres" class="col" style="gap:16px"></div>';
   },
@@ -2347,7 +2349,7 @@ P.panic={
   html(){
     return '<div class="card stitch" style="background:var(--dangerbg);text-align:center"><span class="cute" style="font-size:26px">the panic button</span><p class="sub" style="margin:6px 0 0">one press clears <b>everything</b>: expenses, money in, wallets, cards, piggies, utang, repeating and settings. a totally fresh start.</p></div>'+
       '<div style="display:flex;justify-content:center;padding:6px 0"><button type="button" class="panicbtn" data-act="panic1" aria-label="Panic: clear everything">'+panicSvg(250)+'</button></div>'+
-      '<div class="card" style="text-align:center"><span class="sub">psst. save a backup first so you can bring it all back if you change your mind.</span><button type="button" class="btn soft" style="margin-top:12px" data-act="backup">Backup first</button></div>';
+      '<div class="card" style="text-align:center"><span class="sub">psst. save a backup first so you can bring it all back if you change your mind.</span><button type="button" class="btn soft" style="margin-top:12px" data-act="backup">Backup First</button></div>';
   }
 };
 
@@ -2365,7 +2367,7 @@ P.lists={
       '<button type="button" class="xbtn" aria-label="Delete '+esc(p.name)+'" data-act="delpay" data-id="'+p.id+'">'+ICON.x+'</button></div>').join('');
     const addRow=(id,ph,act)=>'<div class="row g8" style="margin-top:10px"><input class="inp" id="'+id+'" placeholder="'+ph+'" maxlength="24" enterkeyhint="done"><button type="button" class="ibtn" style="width:46px;height:46px;background:var(--butter)" data-act="'+act+'" aria-label="Add"><span class="fr" style="font-size:22px">+</span></button></div>';
     const seg='<div class="seg full" style="margin-top:0">'+[['cat','Categories'],['pay','Payment methods']].map(([k,l])=>'<button type="button" class="'+(listTab===k?'on':'')+'" data-act="listtab" data-v="'+k+'">'+l+'</button>').join('')+'</div>';
-    const _lc='<div class="card stitch"><div class="ttl">Spent on</div><span class="sub">tap a circle to change its colour, tap a name to rename it</span><div style="margin-top:8px">'+cats+'</div>'+addRow('newcat','new category…','addcat')+'</div>',_lp='<div class="card stitch"><div class="ttl">Paid with</div><span class="sub">tap the tag to switch type. <b>CASH</b> and <b>E-WALLET</b> (use this for bank & debit too) each get their own balance. <b>CREDIT</b> cards go to a monthly bill.</span><div style="margin-top:8px">'+pays+'</div>'+addRow('newpay','new payment method…','addpay')+'</div>';
+    const _lc='<div class="card stitch"><div class="ttl">Spent on</div><span class="sub">tap a circle to change its colour, tap a name to rename it</span><div style="margin-top:8px">'+cats+'</div>'+addRow('newcat','new category…','addcat')+'</div>',_lp='<div class="card stitch"><div class="ttl">Paid With</div><span class="sub">tap the tag to switch type. <b>CASH</b> and <b>E-WALLET</b> (use this for bank & debit too) each get their own balance. <b>CREDIT</b> cards go to a monthly bill.</span><div style="margin-top:8px">'+pays+'</div>'+addRow('newpay','new payment method…','addpay')+'</div>';
     return (WIDE()?_lc+_lp:seg+(listTab==='cat'?_lc:_lp))+
       '<div class="sub" style="text-align:center;font-size:13px">deleting one keeps your old expenses. it just stops showing up in the lists.</div>';
   }
@@ -2385,8 +2387,8 @@ P.settings={
         '<div class="setrow"><span class="sub">week starts</span><div class="seg"><button type="button" class="'+(S.weekSun?'':'on')+'" data-act="weekstart" data-v="mon">Monday</button><button type="button" class="'+(S.weekSun?'on':'')+'" data-act="weekstart" data-v="sun">Sunday</button></div></div></div>')+
       gsec('How I Pay',glist(
         '<div class="gi"><span class="gic" style="background:var(--pink2)">'+ICON.card+'</span><span class="gt"><b>Credit Card Mode</b><small class="wrap">for when you mostly pay by card. Home shows your card bills, and new expenses start on your main card.</small></span>'+sw(S.ccMode,'ccmode','Credit card mode')+'</div>'+
-        (S.ccMode&&creditCards().length?'<div class="gi"><span class="gic" style="background:var(--lav2)">'+ICON.card+'</span><span class="gt"><b>Main Card</b><small>new expenses start on this one</small></span><select class="sel" style="height:40px;width:auto;max-width:48%" data-in="ccdef">'+creditCards().map(c=>'<option value="'+c.id+'"'+(c.id===S.ccDefault?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></div>':'')+
-        giRow({act:'plan',ic:budgetSvg(20),icbg:'var(--mint2)',t:'Monthly Plan',s:plan?'your spending plan for each month':'set how much you want to spend each month',v:num(S.plan)?esc(pesoShort(S.plan)):'',chev:true})+
+        (S.ccMode&&creditCards().length?'<div class="gi"><span class="gic" style="background:var(--lav2)">'+ICON.card+'</span><span class="gt"><b>Main Card</b></span><select class="sel" style="height:40px;width:auto;max-width:58%" data-in="ccdef">'+creditCards().map(c=>'<option value="'+c.id+'"'+(c.id===S.ccDefault?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></div>':'')+
+        giRow({act:'plan',ic:budgetSvg(20),icbg:'var(--mint2)',t:'Monthly Plan',s:plan?'how much you want to spend':'set how much you want to spend',v:num(S.plan)?esc(pesoShort(S.plan)):'',chev:true})+
         giRow({act:'go',attrs:' data-p="lists"',ic:tagSvg(20),icbg:'var(--butter2)',t:'Categories & Payments',s:'rename, recolour, add or remove',chev:true})))+
       gsec('Look','<div class="card"><span class="sub">night mode for the dark. <b>soft night</b> is gentler: not-so-dark greys and less glare, easier if you see halos around bright text.</span>'+
         '<div class="themepick">'+[['light','Day','#FBF1E6'],['dark','Night','#1C1714'],['soft','Soft night','#36302B'],['auto','Follow my device','linear-gradient(135deg,#FBF1E6 50%,#1C1714 50%)']].map(([k,l,bg])=>'<button type="button" class="'+(themePref()===k?'on':'')+'" data-act="theme" data-v="'+k+'"><span class="sw" style="background:'+bg+'"></span><span class="fr">'+l+'</span></button>').join('')+'</div></div>')+
@@ -2481,7 +2483,7 @@ function recBreak(){
 }
 function itemModal(k,id){
   const it=S[k].find(x=>x.id===id);if(!it)return;
-  openModal('<span class="fr" style="font-size:20px">Edit '+(k==='cats'?'category':'payment method')+'</span>'+
+  openModal('<span class="fr" style="font-size:20px">Edit '+(k==='cats'?'Category':'Payment Method')+'</span>'+
     '<label class="col g6"><span class="lbl">Name</span><input class="inp" id="it_name" maxlength="24" value="'+esc(it.name)+'"></label>'+
     '<div class="col g6"><span class="lbl">Colour</span><div class="colorpick" id="it_colors">'+SWATCHES.map(c=>'<button type="button" class="'+(c===it.color?'on':'')+'" style="background:'+c+'" data-act="itcolor" data-v="'+c+'" aria-label="colour"></button>').join('')+'</div></div>'+
     errLine('it_err')+modalBtns('saveitem','Save',' data-id="'+id+'" data-k="'+k+'"')+
@@ -2506,7 +2508,7 @@ function stmtModal(c,key){
 function oldStmtModal(c){
   const cur=cycleAt(c,today());let opts='';
   for(let k=cur.k-2;k>=cur.k-37;k--){const cy=cycleK(c,k),si=stmtInfo(c,cy);opts+='<option value="'+cy.key+'">'+esoaName(cy)+' '+cy.key.slice(0,4)+(si.amt>0||ovEdited(cy.ov)?' · '+peso(si.amt):'')+'</option>';}
-  openModal('<span class="fr" style="font-size:20px">Add an older eSOA</span><span class="sub" style="font-size:14px">for months before you started logging here. pick the month, then type the total from that eSOA (and its dates if they were different).</span>'+
+  openModal('<span class="fr" style="font-size:20px">Add an Older eSOA</span><span class="sub" style="font-size:14px">for months before you started logging here. pick the month, then type the total from that eSOA (and its dates if they were different).</span>'+
     '<label class="col g6"><span class="lbl">Which month</span><select class="sel" id="os_m">'+opts+'</select></label>'+modalBtns('oldstmtgo','Next',' data-id="'+c.id+'"'));
 }
 function cardDatesModal(c){
@@ -2537,7 +2539,7 @@ function cardAnchors(n,m){
 }
 function utangModal(id){
   const u=id?S.utang.find(x=>x.id===id):{dir:utTab,who:'',amt:'',note:'',wallet:'w:'+((activeWallets()[0]||{}).id)};
-  openModal('<span class="fr" style="font-size:20px">'+(id?'Edit utang':'New utang 🤝')+'</span>'+
+  openModal('<span class="fr" style="font-size:20px">'+(id?'Edit Utang':'New Utang')+'</span>'+
     '<div class="seg full" style="margin-top:0" id="ut_dir">'+['lent','borrowed'].map(d=>'<button type="button" class="'+(u.dir===d?'on':'')+'" data-act="utdir" data-v="'+d+'">'+(d==='lent'?'I lent money':'I borrowed')+'</button>').join('')+'</div>'+
     '<label class="col g6"><span class="lbl" id="ut_wholbl">'+(u.dir==='lent'?'Who owes you':'Who you owe')+'</span><input class="inp" id="ut_who" maxlength="30" placeholder="name" value="'+esc(u.who)+'"></label>'+(id?'':sugg('ut_who',utPeople()))+
     '<label class="col g6"><span class="lbl">How much</span>'+moneyField('ut_amt',u.amt)+'</label>'+
@@ -2557,10 +2559,10 @@ function recModal(id){
   const r=id?S.recs.find(x=>x.id===id):{name:'',amt:'',cat:'',pay:'',freq:'monthly',start:'',color:nextColor(S.recs)};
   const startVal=id?recOcc(r,r.k||0):'';
   const opt=(list,cur)=>'<option value="">---</option>'+list.filter(x=>!x.gone||x.id===cur).slice().sort((a,b)=>a.name.localeCompare(b.name)).map(x=>'<option value="'+x.id+'"'+(x.id===cur?' selected':'')+'>'+esc(x.name)+'</option>').join('');
-  openModal('<span class="fr" style="font-size:20px">'+(id?'Edit repeating':'New repeating ✿')+'</span>'+
+  openModal('<span class="fr" style="font-size:20px">'+(id?'Edit Repeating':'New Repeating')+'</span>'+
     '<label class="col g6"><span class="lbl">What is it</span><input class="inp" id="rc_name" maxlength="30" placeholder="rent, spotify, phone load…" value="'+esc(r.name)+'"></label>'+
     '<label class="col g6"><span class="lbl">How much</span>'+moneyField('rc_amt',r.amt)+'</label>'+
-    '<div class="grid2"><label class="col g6"><span class="lbl">Spent on</span><select class="sel" id="rc_cat">'+opt(S.cats,r.cat)+'</select></label><label class="col g6"><span class="lbl">Paid with</span><select class="sel" id="rc_pay">'+opt(S.pays,r.pay)+'</select></label></div>'+
+    '<div class="grid2"><label class="col g6"><span class="lbl">Spent on</span><select class="sel" id="rc_cat">'+opt(S.cats,r.cat)+'</select></label><label class="col g6"><span class="lbl">Paid With</span><select class="sel" id="rc_pay">'+opt(S.pays,r.pay)+'</select></label></div>'+
     '<div class="col g6"><span class="lbl">How often</span><div class="seg full" style="margin-top:0" id="rc_freq">'+[['weekly','Weekly'],['monthly','Monthly'],['yearly','Yearly'],['custom','Custom']].map(([k,l])=>'<button type="button" class="'+(r.freq===k||(k==='custom'&&r.freq==='days30')?'on':'')+'" data-act="rfreq" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+
       '<div class="col g8'+(r.freq==='custom'||r.freq==='days30'?'':' hidden')+'" id="rc_cust"><div class="row g8" style="align-items:center"><span class="sub">every</span><select class="sel" id="rc_every" style="width:84px;height:42px">'+[...Array(24)].map((_,i)=>'<option'+((r.freq==='days30'?30:+r.every||6)===i+1?' selected':'')+'>'+(i+1)+'</option>').join('')+(r.freq==='days30'?'<option selected>30</option>':'')+'</select><select class="sel" id="rc_unit" style="flex:1;height:42px">'+[['day','days'],['week','weeks'],['month','months'],['year','years']].map(([k,l])=>'<option value="'+k+'"'+((r.freq==='days30'?'day':r.unit||'month')===k?' selected':'')+'>'+l+'</option>').join('')+'</select></div></div>'+
         '<div class="qchips">'+[[2,'week','every 2 weeks'],[3,'month','every 3 months'],[6,'month','every 6 months'],[30,'day','every 30 days']].map(([n,u,l])=>'<button type="button" class="qchip" data-act="rquick" data-n="'+n+'" data-u="'+u+'">'+l+'</button>').join('')+'</div></div></div>'+
@@ -2580,12 +2582,12 @@ function catUse(){const c={},since=shift(today(),-120);S.entries.forEach(e=>{if(
 function filteredCats(){const q=(xf&&xf.q||'').trim().toLowerCase();return activeCats().filter(c=>!q||c.name.toLowerCase().includes(q));}
 function catBtnInner(){const c=catOf(xf.cat);return (c?'<span class="dot" style="background:'+c.color+'"></span><span class="ell">'+esc(c.name)+'</span>':'<span class="sub" style="font-size:15px">pick a category</span>')+'<span class="cv">'+ICON.caret+'</span>';}
 function catDD(open){const p=$('#xc_catpanel'),b=$('#xc_catbtn');if(!p)return;p.classList.toggle('hidden',!open);b.classList.toggle('open',open);b.setAttribute('aria-expanded',open);if(!open){xf.q='';const q=$('#xc_q');if(q){q.value='';q.classList.add('hidden');q.blur();}$('#xc_cats').innerHTML=catChips();const nb=$('#xc_catnew');if(!nb)p.insertAdjacentHTML('beforeend','<button type="button" class="pchip new" id="xc_catnew" data-act="xcatnew" style="align-self:flex-start">+ new category</button>');}}
-function repInfo(){const el=$('#xc_repinfo');if(!el)return;const tmp={freq:xf.freq,start:xf.date};recSkipPast(tmp,xf.date);el.innerHTML='logged now, then it repeats on its own. next one: <b>'+shortDay(recOcc(tmp,tmp.k))+'</b>. you can edit or stop it anytime in <b>Others › Repeating</b>.';}
+function repInfo(){const el=$('#xc_repinfo');if(!el)return;const tmp={freq:xf.freq,start:xf.date};recSkipPast(tmp,xf.date);el.innerHTML='logged now, then it repeats on its own. next one: <b>'+shortDay(recOcc(tmp,tmp.k))+'</b>. you can edit or stop it anytime in <b>More › Repeating</b>.';}
 function spChips(){const ps=utPeople();xf.spp.forEach(n=>{if(!ps.includes(n))ps.unshift(n);});
   return ps.slice(0,14).map(n=>'<button type="button" class="pchip'+(xf.spp.includes(n)?' on':'')+'" data-act="xsppick" data-v="'+esc(n)+'"><span class="dot" style="background:'+avColor(n)+'"></span>'+esc(n)+'</button>').join('')+(xf.spIn?'':'<button type="button" class="pchip new" data-act="xspnew">+ add someone</button>');}
 function spMath(amt){const n=xf.spp.length,share=n?Math.round(amt/(n+1)*100)/100:amt;return {n,share,mine:Math.round((amt-share*n)*100)/100};}
 function spInfo(){const el=$('#xc_spinfo');if(!el)return;const amt=num(val('xc_amt')),m=spMath(amt);
-  const cc=payInfo(xf.pay).type==='credit';el.innerHTML=!m.n?'pick who you split it with. uneven split? use <b>Others › Split the bill</b>.':amt>0?'<b>'+peso(m.share)+'</b> each. '+(cc?'the whole '+peso(amt)+' goes on your card as spent, since that\'s what you\'ll pay. ':'your part ('+peso(m.mine)+') gets logged. ')+m.n+' utang'+(m.n>1?'s':'')+' of '+peso(m.share)+(m.n>1?' go':' goes')+' to <b>Utang</b>. when they pay you back, it goes into the wallet you pick.':'type how much the whole bill was, then each person\'s part shows here.';}
+  const cc=payInfo(xf.pay).type==='credit';el.innerHTML=!m.n?'pick who you split it with. uneven split? use <b>More › Split the Bill</b>.':amt>0?'<b>'+peso(m.share)+'</b> each. '+(cc?'the whole '+peso(amt)+' goes on your card as spent, since that\'s what you\'ll pay. ':'your part ('+peso(m.mine)+') gets logged. ')+m.n+' utang'+(m.n>1?'s':'')+' of '+peso(m.share)+(m.n>1?' go':' goes')+' to <b>Utang</b>. when they pay you back, it goes into the wallet you pick.':'type how much the whole bill was, then each person\'s part shows here.';}
 function utPeople(){const seen=[];S.utang.slice().sort((a,b)=>(b.ts||0)-(a.ts||0)).forEach(u=>{const n=(u.who||'').trim();if(n&&!seen.some(x=>x.toLowerCase()===n.toLowerCase()))seen.push(n);});return seen;}
 function whoChips(){const ps=utPeople();if(xf.who&&!ps.includes(xf.who))ps.unshift(xf.who);
   return ps.slice(0,12).map(n=>'<button type="button" class="pchip'+(n===xf.who?' on':'')+'" data-act="xwhopick" data-v="'+esc(n)+'"><span class="dot" style="background:'+avColor(n)+'"></span>'+esc(n)+'</button>').join('')+(xf.whoIn?'':'<button type="button" class="pchip new" data-act="xwhonew">+ new person</button>');}
@@ -2644,7 +2646,7 @@ function pigModal(id){
       const wk=Math.max(1,Math.ceil((d+1)/7)),mo=Math.max(1,(monthIdx(p.by)-monthIdx(today()))||1);
       return '<div class="grid2"><div class="chip" style="flex-direction:column;gap:0;border-radius:16px"><span class="sub" style="font-size:12px">save each week</span><span class="fr">'+peso(left/wk)+'</span></div><div class="chip" style="flex-direction:column;gap:0;border-radius:16px"><span class="sub" style="font-size:12px">or each month</span><span class="fr">'+peso(left/mo)+'</span></div></div>';})():'')+
     (goal?'<div class="prog"><i style="width:'+Math.min(100,v/goal*100).toFixed(1)+'%;background:#7FCB9B'+(v>=goal?';border-right:0':'')+'"></i></div>':'')+
-    '<div class="grid2"><button type="button" class="btn sm" data-act="pigadd" data-id="'+id+'">+ Add</button><button type="button" class="btn sm soft" data-act="pigout" data-id="'+id+'"'+(v<=0?' disabled':'')+'>Take out</button></div>'+
+    '<div class="grid2"><button type="button" class="btn sm" data-act="pigadd" data-id="'+id+'">+ Add</button><button type="button" class="btn sm soft" data-act="pigout" data-id="'+id+'"'+(v<=0?' disabled':'')+'>Take Out</button></div>'+
     '<div class="grid2"><button type="button" class="btn sm soft" data-act="pigedit" data-id="'+id+'">'+ICON.pen+' Edit</button><button type="button" class="btn sm soft danger" data-act="pigdel" data-id="'+id+'">Delete</button></div>'+
     '<button type="button" class="btn soft sm" data-act="closemodal">Close</button>');
 }
@@ -2733,7 +2735,7 @@ function expModal(id,date,pre){
     '<div id="xc_kpw"'+(xf.kp?'':' class="hidden"')+'>'+kpHtml()+'</div>'+
     (picks.length?'<div class="col g6"><span class="lbl">Same as before?</span><div class="mchips" style="margin:0 -4px;padding:2px 4px 4px">'+picks.map(x=>{const c=catInfo(x.cat);return '<button type="button" class="rchip" data-act="xrecent" data-id="'+x.id+'"><span class="dot" style="width:11px;height:11px;border-width:1.5px;background:'+c.color+'"></span>'+esc(x.note||c.name)+' <b>'+esc(pesoShort(num(x.amt)))+'</b></button>';}).join('')+'</div></div>':'')+
     '<div class="col g6 pick" id="xc_catw"><span class="lbl">Spent on</span><div class="pchips" id="xc_cats" style="max-height:none">'+catChips()+'</div><input class="inp hidden" id="xc_q" data-in="xq" placeholder="type a new category, or find one…" autocomplete="off" enterkeyhint="done" style="height:42px"></div>'+
-    '<div class="col g6 pick" id="xc_payw"><span class="lbl">Paid with</span><div class="pchips">'+payChips()+'</div></div>'+
+    '<div class="col g6 pick" id="xc_payw"><span class="lbl">Paid With</span><div class="pchips">'+payChips()+'</div></div>'+
     '<label class="col g6"><span class="lbl">Note (optional)</span><input class="inp" id="xc_note" maxlength="80" placeholder="e.g. jollibee with mama, grab home" value="'+esc(e?e.note||'':'')+'"></label>'+
     '<button type="button" class="moreopt'+(hasMore?' open':'')+'" data-act="xmore" aria-expanded="'+hasMore+'"><b>More Options</b><small>'+(!id&&d<=today()?'tags, repeat, utang, split':'tags')+'</small>'+TABIC.down+'</button>'+
     '<div id="xc_more" class="col g12'+(hasMore?'':' hidden')+'">'+
@@ -2760,7 +2762,7 @@ function payBillModal(c,stmt,remaining){
     '<div id="pb_otherw" class="hidden"><label class="col g6"><span class="lbl">How much</span>'+moneyField('pb_amt','')+'</label></div>'+
     '<div class="col g6"><span class="lbl">Paid from'+(S.ccMode?' (optional)':'')+'</span><div class="pchips" id="pb_from">'+chips.map(([r,n,col])=>'<button type="button" class="pchip'+(r===from?' on':'')+'" data-act="payfrom" data-v="'+r+'"><span class="dot" style="background:'+col+'"></span>'+esc(n)+(S.ccMode||r==='ext'?'':' · '+esc(pesoShort(balOf(r))))+'</button>').join('')+'</div></div>'+
     '<span class="sub" id="pb_note" style="font-size:13px">'+(minLeft>0&&minLeft<remaining?'':'paying less is fine too. it shows what\'s left. ')+(S.ccMode?'paying from your bank app doesn\'t change anything else here.':'it comes out of the wallet you pick.')+'</span>'+
-    errLine('pb_err')+modalBtns('savebill','Mark '+peso(remaining)+' as Paid',' data-id="'+c.id+'" data-k="'+stmt+'" data-left="'+remaining+'" data-min="'+minLeft+'" data-opt="full" data-from="'+from+'"'));
+    errLine('pb_err')+modalBtns('savebill','Paid '+peso(remaining)+' ✓',' data-id="'+c.id+'" data-k="'+stmt+'" data-left="'+remaining+'" data-min="'+minLeft+'" data-opt="full" data-from="'+from+'"'));
 }
 function checkModal(c,key){
   if(!c||!c.cutA)return;
@@ -3093,7 +3095,7 @@ function handleAct(b,e){
       if(id){const inc=S.income.find(x=>x.id===id);Object.assign(inc,{amt,date,to,src:val('mi_src'),until:until||null});save();closeModal();rerender();toast('saved ✓');return;}
       const iid=uid();S.income.push({id:iid,date,amt,src:val('mi_src'),until:until||null,to,ts:Date.now()});justAdded.add(iid);save();closeModal();rerender();
       toast(to.startsWith('pig:')?'oink! +'+peso(amt)+' 🐷':'+'+peso(amt)+' added ✿');
-      if(!to.startsWith('pig:')&&S.pigs.length)setTimeout(()=>nudge('tuck some into a piggy? 🐷','Add to piggy',' data-act="payday" data-from="'+to+'" data-amt="'+amt+'"'),2000);return;}
+      if(!to.startsWith('pig:')&&S.pigs.length)setTimeout(()=>nudge('tuck some into a piggy? 🐷','Add to Piggy',' data-act="payday" data-from="'+to+'" data-amt="'+amt+'"'),2000);return;}
     case 'delinc':{const inc=S.income.find(x=>x.id===id);askConfirm('Delete '+peso(inc.amt)+' from '+(inc.src||'money in')+'?','Delete',()=>removeAnimated('[data-row="'+id+'"]',()=>{trashIt('income',inc);S.income=S.income.filter(x=>x.id!==id);S.moves.forEach(m=>{if(m.link===id)m.link=null;});}));return;}
     case 'saveleft':{const inc=S.income.find(x=>x.id===id);if(!inc)return;transferModal({title:'Save the leftover',from:inc.to,to:'pig:'+((S.pigs[0]||{}).id),amt:b.dataset.amt,note:'leftover from '+(inc.src||'money in'),link:id});return;}
     /* piggies */
@@ -3175,7 +3177,7 @@ function handleAct(b,e){
     case 'sclear':srch.q='';srch.m='';srch.cat='';srch.pay='';rerender();return;
     /* panic */
     case 'panic1':openModal('<div class="col" style="align-items:center;text-align:center;gap:6px"><span style="font-size:54px;line-height:1">😰</span><span class="fr" style="font-size:24px">are you sure?</span><span class="sub">this clears everything in the app.</span></div><div class="grid2"><button type="button" class="btn soft" data-act="closemodal">No</button><button type="button" class="btn sm" style="background:#FFB3B3" data-act="panic2">Yes</button></div>');return;
-    case 'panic2':openModal('<div class="col" style="align-items:center;text-align:center;gap:6px"><span style="font-size:60px;line-height:1">😳</span><span class="fr" style="font-size:26px">are you SURE sure?</span><span class="sub">'+(cloudOn()?'it clears your other synced devices too. (the cloud keeps 3 weeks of backups, just in case)':'there\'s no undo. everything goes poof.')+'</span></div><div class="col g10"><button type="button" class="btn soft" data-act="closemodal">No, take me back</button><button type="button" class="btn sm" style="background:#EE4B55;color:#fff" data-act="panic3">Yes, delete it all</button></div>');return;
+    case 'panic2':openModal('<div class="col" style="align-items:center;text-align:center;gap:6px"><span style="font-size:60px;line-height:1">😳</span><span class="fr" style="font-size:26px">are you SURE sure?</span><span class="sub">'+(cloudOn()?'it clears your other synced devices too. (the cloud keeps 3 weeks of backups, just in case)':'there\'s no undo. everything goes poof.')+'</span></div><div class="col g10"><button type="button" class="btn soft" data-act="closemodal">No, Take Me Back</button><button type="button" class="btn sm" style="background:#EE4B55;color:#fff" data-act="panic3">Yes, Delete It All</button></div>');return;
     case 'panic3':{preSnap('before panic button');S=defaults();fixup(null);save();closeModal();navStack.length=0;viewMonth=flowMonth=tfMonth=inMonth=null;yrPick=null;setHash('home');setTimeout(()=>toast('poof! fresh start ✿'),200);return;}
     /* data */
     case 'backup':doBackup();return;
@@ -3205,7 +3207,7 @@ function handleAct(b,e){
     case 'cardpay':{const c=payOf(id),k=b.dataset.k;if(!c)return;const si=stmtInfo(c,cycleKey(c,k)),left=Math.max(0,Math.round((si.amt-si.paid)*100)/100);if(!(left>0)){toast('nothing left to pay ✿');return;}payBillModal(c,k,left);return;}
     case 'paypick':{const v=b.dataset.v,sb=$('[data-act=savebill]');document.querySelectorAll('#pb_opts .optr').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-checked',on);});
       sb.dataset.opt=v;$('#pb_otherw').classList.toggle('hidden',v!=='other');const left=num(sb.dataset.left),mn=num(sb.dataset.min);
-      sb.textContent=v==='full'?'Mark '+peso(left)+' as Paid':v==='min'?'Mark '+peso(mn)+' as Paid':'Mark as Paid';
+      sb.textContent=v==='full'?'Paid '+peso(left)+' ✓':v==='min'?'Paid '+peso(mn)+' ✓':'Paid ✓';
       const nt=$('#pb_note');if(nt&&v==='min')nt.textContent=peso(left-mn)+' will still be left on this eSOA. pay it by the due date so it doesn\'t move to the next one.';return;}
     case 'payfrom':{document.querySelectorAll('#pb_from .pchip').forEach(x=>x.classList.toggle('on',x===b));$('[data-act=savebill]').dataset.from=b.dataset.v;return;}
     case 'chkopen':checkModal(payOf(id),b.dataset.k);return;
@@ -3439,7 +3441,7 @@ P.bills={
       if(!todo.length)body='<div class="card" style="text-align:center;padding:26px 16px"><span class="cute" style="font-size:24px">all caught up ✿</span><div class="sub">nothing to pay right now</div></div>';
     }else if(tab==='mine'){
       const nxt=bl=>{const o=billOcc(bl,t,shift(t,400)).find(d=>!(bl.done&&bl.done[d]));return o;};
-      body=(S.bills||[]).length?'<div class="card" style="padding:6px 16px">'+(WIDE()?'<div class="ttl" style="padding-top:8px">My reminders</div>':'')+S.bills.slice().sort((a,b)=>(nxt(a)||'9').localeCompare(nxt(b)||'9')).map(bl=>{const n=nxt(bl),c=catOf(bl.cat),p=payOf(bl.pay);
+      body=(S.bills||[]).length?'<div class="card" style="padding:6px 16px">'+(WIDE()?'<div class="ttl" style="padding-top:8px">My Reminders</div>':'')+S.bills.slice().sort((a,b)=>(nxt(a)||'9').localeCompare(nxt(b)||'9')).map(bl=>{const n=nxt(bl),c=catOf(bl.cat),p=payOf(bl.pay);
         return '<button type="button" class="irow" data-act="bopen" data-kind="bill" data-id="'+bl.id+'"><span class="bchk auto" style="background:var(--peachbg)">'+BIC.bell+'</span><span class="col" style="flex:1;min-width:0;gap:1px"><span class="fr ell">'+esc(bl.name)+'</span><span class="sub ell" style="font-size:12px">'+(bl.freq==='monthly'?'every month on the '+ord(+bl.due.slice(8)):'once, '+shortDay(bl.due))+(n?' · next '+shortDay(n):' · all done')+(c&&p?' · logs to '+esc(c.name):'')+'</span></span><span class="fr" style="white-space:nowrap">'+(num(bl.amt)?peso(bl.amt):'')+'</span><span class="go">'+ICON.chev+'</span></button>';}).join('')+'</div>'
         :'<div class="card" style="text-align:center;padding:22px 16px"><span class="cute" style="font-size:22px">no reminders yet</span><div class="sub">add the bills that don\'t come with a card, like electricity, water or rent.</div></div>';
     }else body=done.length?grp('Done lately',done):'<div class="card empty sub">nothing ticked off yet</div>';
@@ -3449,8 +3451,8 @@ P.bills={
         '<span class="big" style="font-size:32px">'+peso(tot)+'</span><span class="sub">due in the next 30 days'+(late?' · <span class="negc">'+late+' overdue</span>':'')+'</span><span class="sub" style="font-size:12px">tap to see the breakdown '+ICON.chev+'</span></div>'+billSvg(78)+'</div></div>'+
       '<div class="seg full mobonly" style="margin-top:0">'+[['todo','To do'],['done','Done'],['mine','My reminders']].map(([k,l])=>'<button type="button" class="'+(billTab===k?'on':'')+'" data-act="btab" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+
       body+
-      '<button type="button" class="btn" data-act="newbill">+ Add a bill reminder</button>'+
-      '<div class="sub" style="text-align:center;font-size:12px;margin-top:-4px">card bills and repeating payments show up here on their own. ticking a card bill pays it from your cash.</div>';
+      '<button type="button" class="btn" data-act="newbill">+ Add a Bill Reminder</button>'+
+      '<div class="sub" style="text-align:center;font-size:12px;margin-top:-4px">card bills and repeating payments show up here on their own. ticking a card bill marks it as paid.</div>';
   }
 };
 function billBreak(){
@@ -3482,14 +3484,14 @@ function billTick(b){
 function billModal(id){
   const bl=id?S.bills.find(x=>x.id===id):{name:'',amt:'',due:shift(today(),7),freq:'monthly',cat:'',pay:''};if(!bl)return;
   const opt=(list,cur,none)=>'<option value="">'+none+'</option>'+list.map(x=>'<option value="'+x.id+'"'+(x.id===cur?' selected':'')+'>'+esc(x.name)+'</option>').join('');
-  openModal('<div class="row g10">'+billSvg(34)+'<span class="fr" style="font-size:20px">'+(id?'Edit reminder':'New bill reminder')+'</span></div>'+
+  openModal('<div class="row g10">'+billSvg(34)+'<span class="fr" style="font-size:20px">'+(id?'Edit Reminder':'New Bill Reminder')+'</span></div>'+
     '<label class="col g6"><span class="lbl">What bill</span><input class="inp" id="bl_name" maxlength="30" placeholder="electricity, water, rent…" value="'+esc(bl.name)+'"></label>'+
     (id?'':sugg('bl_name',['Electricity','Water','Internet','Rent','Phone plan','Condo dues']))+
     '<div class="grid2"><label class="col g6"><span class="lbl">Amount (optional)</span>'+moneyField('bl_amt',bl.amt?String(bl.amt):'')+'</label>'+
     '<label class="col g6"><span class="lbl">'+(id&&bl.freq==='monthly'?'First due date':'Due date')+'</span><input class="inp" type="date" id="bl_due" value="'+bl.due+'"></label></div>'+
     '<div class="seg full" style="margin-top:0" id="bl_freq">'+[['monthly','Every month'],['once','Just once']].map(([k,l])=>'<button type="button" class="'+(bl.freq===k?'on':'')+'" data-act="blfreq" data-v="'+k+'">'+l+'</button>').join('')+'</div>'+
     '<div class="grid2"><label class="col g6"><span class="lbl">Spent on</span><select class="sel" id="bl_cat">'+opt(activeCats(),bl.cat,'—')+'</select></label>'+
-    '<label class="col g6"><span class="lbl">Paid with</span><select class="sel" id="bl_pay">'+opt(activePays(),bl.pay,'—')+'</select></label></div>'+
+    '<label class="col g6"><span class="lbl">Paid With</span><select class="sel" id="bl_pay">'+opt(activePays(),bl.pay,'—')+'</select></label></div>'+
     '<span class="sub" style="font-size:12px;margin-top:-4px">pick both and ticking it off logs the expense for you. leave them empty for a plain reminder.</span>'+
     errLine('bl_err')+modalBtns('savebl',id?'Save':'Add',(id?' data-id="'+id+'"':'')+' data-freq="'+bl.freq+'"')+
     (id?'<button type="button" class="linkbtn" style="align-self:center;color:var(--neg)" data-act="delbl" data-id="'+id+'">'+ICON.x+' delete this reminder</button>':''));
@@ -3516,7 +3518,7 @@ const bioName=()=>isApple()?'Face ID / Touch ID':'fingerprint / face unlock';
    - works offline: changes wait on this device and go up when you're back
    - a full snapshot goes to the cloud once a day, kept for 3 weeks
    ===================================================================== */
-const APP_VERSION='17',APP_DATE='10 Oct 2026';
+const APP_VERSION='18',APP_DATE='20 Oct 2026';
 const CLOUD={url:'https://jnbqymfqhswcgmrdoccp.supabase.co',key:'sb_publishable_K4wTiKuZYQXVjD74Rt1SrA_N68JpAHx'};   // filled in once your Supabase project exists
 const AKEY='moneylog-auth',YKEY='moneylog-sync',SEP='\u0001';
 const ARR=['cats','pays','entries','income','moves','pigs','utang','recs','trash','challenges','bills','inst'];
@@ -3632,8 +3634,8 @@ document.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender)flushR
 function askFirst(){return new Promise(res=>{
   askFirst.res=res;
   openModal('<div class="col" style="align-items:center;text-align:center;gap:4px">'+cloudPig()+'<span class="fr" style="font-size:20px">this '+deviceName().toLowerCase()+' already has money logs</span><span class="sub">and your cloud has some too. what should we do?</span></div>'+
-    '<button type="button" class="btn" data-act="firstpick" data-v="merge">Combine them</button><span class="sub" style="font-size:12px;margin-top:-6px;text-align:center">keeps everything from both. if the same thing is in both, the cloud version wins.</span>'+
-    '<button type="button" class="btn soft" data-act="firstpick" data-v="cloud">Use my cloud data</button><span class="sub" style="font-size:12px;margin-top:-6px;text-align:center">this '+deviceName().toLowerCase()+'\'s logs get swapped for the cloud ones. a copy is kept on this device, just in case.</span>');
+    '<button type="button" class="btn" data-act="firstpick" data-v="merge">Combine Them</button><span class="sub" style="font-size:12px;margin-top:-6px;text-align:center">keeps everything from both. if the same thing is in both, the cloud version wins.</span>'+
+    '<button type="button" class="btn soft" data-act="firstpick" data-v="cloud">Use My Cloud Data</button><span class="sub" style="font-size:12px;margin-top:-6px;text-align:center">this '+deviceName().toLowerCase()+'\'s logs get swapped for the cloud ones. a copy is kept on this device, just in case.</span>');
   const iv=setInterval(()=>{if($('#modal').hidden){clearInterval(iv);if(askFirst.res){const f=askFirst.res;askFirst.res=null;f(null);}}},400);
 });}
 async function firstSync(){
@@ -3708,8 +3710,8 @@ function syncBoxInner(){
     '<div class="row sb" style="margin-top:8px"><button type="button" class="linkbtn" data-act="aulogout">log out</button>'+(CLOUD.url?'':'<button type="button" class="linkbtn" data-act="auopen" data-v="config">cloud settings</button>')+'</div>';
 }
 function syncCard(){
-  if(!cloudSet())return '<div class="card"><span class="sub">not set up yet. once it is, your phones, iPad and laptop all share the same money log.</span><button type="button" class="btn soft" style="margin-top:12px" data-act="auopen" data-v="config">Set up cloud sync</button></div>';
-  if(!loggedIn())return '<div class="card"><span class="sub">you\'re not logged in on this '+deviceName().toLowerCase()+', so things only save here.</span><button type="button" class="btn" style="margin-top:12px" data-act="auopen" data-v="login">Log in</button></div>';
+  if(!cloudSet())return '<div class="card"><span class="sub">not set up yet. once it is, your phones, iPad and laptop all share the same money log.</span><button type="button" class="btn soft" style="margin-top:12px" data-act="auopen" data-v="config">Set Up Cloud Sync</button></div>';
+  if(!loggedIn())return '<div class="card"><span class="sub">you\'re not logged in on this '+deviceName().toLowerCase()+', so things only save here.</span><button type="button" class="btn" style="margin-top:12px" data-act="auopen" data-v="login">Log In</button></div>';
   return '<div class="card" id="syncbox">'+syncBoxInner()+'</div>';
 }
 function updSync(){document.querySelectorAll('.hello .syncpill').forEach(el=>{el.outerHTML=syncPill();});document.querySelectorAll('.hdr .sdot').forEach(el=>{el.outerHTML=syncDot();});const sb=$('#syncbox');if(sb)sb.innerHTML=syncBoxInner();}
@@ -3728,7 +3730,7 @@ async function maybeSnapshot(){
     await api('DELETE','/rest/v1/snapshots?created_at=lt.'+encodeURIComponent(new Date(Date.now()-21*864e5).toISOString()),null,{Prefer:'return=minimal'});}catch(e){}
 }
 async function snapsModal(){
-  openModal('<span class="fr" style="font-size:20px">Cloud backups ☁️</span><span class="sub">one copy a day, kept for 3 weeks. tap one to go back to how things were then.</span><div id="snaplist" class="col"><div class="sub">loading…</div></div><button type="button" class="btn soft sm" data-act="closemodal">Close</button>');
+  openModal('<span class="fr" style="font-size:20px">Cloud Backups</span><span class="sub">one copy a day, kept for 3 weeks. tap one to go back to how things were then.</span><div id="snaplist" class="col"><div class="sub">loading…</div></div><button type="button" class="btn soft sm" data-act="closemodal">Close</button>');
   let html;
   try{const rows=await api('GET','/rest/v1/snapshots?select=id,created_at,device,note&order=created_at.desc&limit=60')||[];
     html=rows.length?rows.map(r=>{const d=new Date(r.created_at),t=WD[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]+' · '+clock(+d);
@@ -3767,11 +3769,11 @@ function authHtml(msg,ok){
   if(m==='config')body=fld('au_url','Project URL','url','https://xxxx.supabase.co',AU.url,'off')+fld('au_key','Publishable key','text','sb_publishable_…',AU.key,'off')+go('auconfig','Connect');
   if(m==='login')body=fld('au_em','Email','email','you@email.com',em,'username')+fld('au_pw','Password','password','your password','','current-password')+go('aulogin','Log in')+
     '<div class="row sb"><button type="button" class="linkbtn" data-act="aumode" data-v="forgot">forgot password?</button><button type="button" class="linkbtn" data-act="aumode" data-v="signup">new here? sign up</button></div>';
-  if(m==='signup')body=fld('au_em','Email','email','you@email.com',em,'username')+fld('au_pw','Password','password','at least 6 characters','','new-password')+go('ausignup','Create my account')+
+  if(m==='signup')body=fld('au_em','Email','email','you@email.com',em,'username')+fld('au_pw','Password','password','at least 6 characters','','new-password')+go('ausignup','Create My Account')+
     '<button type="button" class="linkbtn" style="align-self:center" data-act="aumode" data-v="login">already have one? log in</button>';
-  if(m==='forgot')body=fld('au_em','Email','email','you@email.com',em,'username')+go('auforgot','Send me a link')+'<button type="button" class="linkbtn" style="align-self:center" data-act="aumode" data-v="login">back to log in</button>';
-  if(m==='newpw')body=fld('au_pw','New password','password','at least 6 characters','','new-password')+go('aunewpw','Save new password');
-  if(m==='sent')body=go('aumode','Back to log in').replace('data-act="aumode"','data-act="aumode" data-v="login"');
+  if(m==='forgot')body=fld('au_em','Email','email','you@email.com',em,'username')+go('auforgot','Send Me a Link')+'<button type="button" class="linkbtn" style="align-self:center" data-act="aumode" data-v="login">back to log in</button>';
+  if(m==='newpw')body=fld('au_pw','New password','password','at least 6 characters','','new-password')+go('aunewpw','Save New Password');
+  if(m==='sent')body=go('aumode','Back to Log In').replace('data-act="aumode"','data-act="aumode" data-v="login"');
   return '<div class="abox">'+cloudPig()+'<div class="cute" style="font-size:30px;line-height:1.1;margin-top:6px">'+T[0]+'</div>'+(T[1]?'<div class="sub" style="max-width:320px">'+T[1]+'</div>':'')+
     '<div class="card stitch acard">'+note+body+'</div>'+
     (m!=='newpw'&&m!=='config'?'<button type="button" class="linkbtn askip" data-act="auskip">use without an account (this '+deviceName().toLowerCase()+' only)</button>':'')+
@@ -3854,7 +3856,7 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
   try{navigator.serviceWorker.register('sw.js').catch(()=>{});let had=!!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)nudge('Money Log got an update ✿','Reload',' data-act="reload"');had=true;});}catch(e){}
 }
-window.__ml={S:()=>S,cycleAt,cashOnHand,balOf,pigTotal,lechonSvg,pigSvg,syncNow,SY:()=>SY,AU:()=>AU,scan,SS:()=>SS,save:()=>save(),rr:()=>rerender()};
+window.__ml={S:()=>S,cycleAt,cycleK,cycleKey,cyAmt,stmtInfo,cashOnHand,balOf,pigTotal,lechonSvg,pigSvg,syncNow,SY:()=>SY,AU:()=>AU,scan,SS:()=>SS,save:()=>save(),rr:()=>rerender()};
 })();
 </script>
 </body>
