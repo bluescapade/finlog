@@ -2,7 +2,7 @@ name: Build Android App
 
 on:
   push:
-    branches: [main]
+    branches: [main, android-app]
     paths:
       - index.html
       - android-app/**
@@ -41,6 +41,14 @@ jobs:
           echo "version=$V" >> "$GITHUB_OUTPUT"
           echo "Money Log v$V, build ${{ github.run_number }}"
 
+      - name: Check for the signing password
+        id: key
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ ${#KS_PASS} -ge 12 ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          else echo "::notice::No ANDROID_KEY_PASSWORD secret yet (needs 12+ characters), so this run builds but doesn't sign or publish."; echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+
       - name: Install Capacitor
         run: npm install --no-audit --no-fund --legacy-peer-deps
 
@@ -63,6 +71,7 @@ jobs:
         run: ./gradlew --no-daemon assembleRelease
 
       - name: Sign APK
+        if: steps.key.outputs.ok == 'true' && github.ref == 'refs/heads/main'
         env:
           KS_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
@@ -95,11 +104,13 @@ jobs:
           ls -la "$OUT"
 
       - uses: actions/upload-artifact@v4
+        if: steps.key.outputs.ok == 'true' && github.ref == 'refs/heads/main'
         with:
           name: money-log-apk
           path: android-app/money-log-v*.apk
 
       - name: Publish release
+        if: steps.key.outputs.ok == 'true' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
