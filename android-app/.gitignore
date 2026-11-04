@@ -1,0 +1,8 @@
+node_modules/
+www/
+android/
+*.apk
+*.jks
+*.p12
+*.keystore
+package-lock.json
