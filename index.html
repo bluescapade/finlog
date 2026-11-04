@@ -727,6 +727,50 @@ html.locked,html.locked body{overscroll-behavior:none}
   #app>.navrow{margin:-6px 0 0}
   #modal .card{max-width:460px;border-radius:26px}
 }
+
+/* ---- v2.0: lighter cream, soft white panels, doodles ---- */
+:root{--bg:#FFF9F3;--card:#FFFFFF;--soft:#7D5E4E;--panelbd:transparent;--panelsh:0 2px 12px rgba(92,61,46,.06);--stitch:rgba(92,61,46,.2)}
+:root[data-theme="dark"]{--panelbd:var(--line2);--panelsh:none;--stitch:rgba(242,231,219,.2)}
+:root[data-theme="soft"]{--panelbd:var(--line2);--panelsh:none;--stitch:rgba(227,215,202,.22)}
+.card{border-color:var(--panelbd);box-shadow:var(--panelsh)}
+.card.stitch{border-color:transparent;box-shadow:none}
+.card.stitch::before{border:1.5px dashed var(--stitch);inset:6px;border-radius:18px}
+.glist{border-color:var(--panelbd);box-shadow:var(--panelsh);border-radius:22px}
+#app{gap:20px}
+#bnav{border-top-color:var(--hair)}
+#bnav .plus{border:0;box-shadow:0 3px 0 #D9B54E}
+:root[data-theme="dark"] #bnav .plus,:root[data-theme="soft"] #bnav .plus{box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.ctile{border-color:transparent;box-shadow:none}
+.ctile:active{transform:scale(.985);box-shadow:none}
+.hdr h1 .doodle{display:inline-block;vertical-align:-4px;margin-left:6px}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hrow>.col{min-width:0}
+.hdood{flex:none;margin-right:-4px}
+.hlinks{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:-4px}
+.hlink{border:0;background:none;padding:6px 0;font:inherit;font-size:13.5px;font-weight:800;color:inherit;opacity:.85;text-align:left;display:inline-flex;align-items:center;gap:4px}
+.hlink svg{width:14px;height:14px}
+.tmcard{display:flex;flex-direction:column;gap:12px}
+.tmnum{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.tmnum b{font-family:'Fredoka',sans-serif;font-weight:600;font-size:28px;letter-spacing:-.3px}
+.tmnum span{font-size:14px;color:var(--soft);font-weight:700}
+.pwrap{position:relative;display:block}
+.pwrap .pbar.big{height:10px;border-radius:6px}
+.pwrap .heart{position:absolute;top:-6px;width:21px;height:21px;margin-left:-10px;pointer-events:none}
+.tmsub{font-size:13px;color:var(--soft);font-weight:700;margin-top:-4px}
+.tmlegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:700;color:var(--soft)}
+.tmlegend button,.tmlegend span{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:2px 0;font:inherit;color:inherit}
+.tmlegend i{width:9px;height:9px;border-radius:50%;flex:none}
+.dbox{width:44px;height:44px;border-radius:14px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;line-height:1.05;color:var(--ink)}
+.dbox b{font-size:18px;font-weight:600}
+.dbox small{font-size:11.5px;font-weight:500;opacity:.85}
+.owesum{display:flex;align-items:center;gap:16px;padding:14px 18px}
+.owesum .col{gap:0;min-width:0}
+.owesum small{font-size:13px;color:var(--soft);font-weight:700}
+.owesum b{font-family:'Fredoka',sans-serif;font-weight:600;font-size:23px}
+.owesum b.lt{font-weight:500;color:var(--soft)}
+.owesum .vr{width:1px;align-self:stretch;background:var(--line2)}
+.ctile .cn{display:flex;align-items:center;gap:8px}
+.ctile .cn svg{flex:none}
 </style>
 </head>
 <body>
@@ -958,7 +1002,8 @@ function refInfo(ref){
   return {name:'?',color:'#ddd',kind:'?'};
 }
 const refChip=ref=>{const r=refInfo(ref);return '<span class="ref"><span class="dot" style="background:'+r.color+'"></span><span class="ell">'+esc(r.name)+'</span></span>';};
-function cyEnd(card,j){const n=addMonthsDate(card.cutA,j),o=card.ov&&card.ov[n];return o&&o.cut||n;}
+const CUTWIN=10;
+function cyEnd(card,j){const n=addMonthsDate(card.cutA,j),o=card.ov&&card.ov[n];return o&&o.cut&&Math.abs(daysBetween(n,o.cut))<=CUTWIN?o.cut:n;}
 function cycleK(card,k){const key=addMonthsDate(card.cutA,k),o=(card.ov&&card.ov[key])||{};
   return {k,key,start:shift(cyEnd(card,k-1),1),end:cyEnd(card,k),due:o.due||(card.dueA?addMonthsDate(card.dueA,k):null),ov:o};}
 function cycleAt(card,date){
@@ -1294,7 +1339,7 @@ function syncDot(){if(!cloudSet())return '';const [c,t]=pillState();return '<but
 function topBar(page){
   const t=today(),d=parse(t),root=isRoot(page);
   let pre='',title=esc(pageTitle(page)),acts='';
-  if(page==='home'){pre=WDL[d.getDay()]+', '+d.getDate()+' '+MONL[d.getMonth()]+syncDot();title=(S.name?'Hi, '+esc(S.name):esc(S.title||'Money Log'))+' ✿';}
+  if(page==='home'){pre=WDL[d.getDay()]+', '+d.getDate()+' '+MONL[d.getMonth()]+syncDot();title=(S.name?'Hi, '+esc(S.name):esc(S.title||'Money Log'))+flowerDoodle();}
   const ib=(act,ic,lbl,x)=>'<button type="button" class="ibtn" data-act="'+act+'"'+(x||'')+' aria-label="'+lbl+'">'+ic+'</button>';
   const hp=(act,ic,lbl,x)=>'<button type="button" class="hpill" data-act="'+act+'"'+(x||'')+'>'+ic+lbl+'</button>';
   if(page==='home')acts=ib('go',TABIC.sliders,'Settings',' data-p="settings"');
@@ -1497,6 +1542,14 @@ const hero=(bg,label,value,sub,art,extra)=>'<div class="card stitch" style="back
 
 /* ---------- pages ---------- */
 const P={};
+/* v2.0 doodles (stroke follows the theme ink) */
+const DK='style="stroke:var(--edge)"';
+const flowerDoodle=()=>'<svg class="doodle" width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><g fill="#F6B8C8" '+DK+' stroke-width="1.6"><circle cx="16" cy="8" r="5"/><circle cx="24" cy="14" r="5"/><circle cx="21" cy="23" r="5"/><circle cx="11" cy="23" r="5"/><circle cx="8" cy="14" r="5"/></g><circle cx="16" cy="16" r="4" fill="#F7D774" '+DK+' stroke-width="1.6"/></svg>';
+const cardDoodle=col=>'<svg class="hdood" width="74" height="64" viewBox="0 0 74 64" aria-hidden="true"><g transform="rotate(-10 37 32)"><rect x="8" y="14" width="56" height="38" rx="8" fill="'+(col||'#F6B8C8')+'" '+DK+' stroke-width="2"/><rect x="8" y="22" width="56" height="7" style="fill:var(--edge)"/><rect x="15" y="36" width="12" height="9" rx="2" fill="#F7D774" '+DK+' stroke-width="1.6"/><circle cx="48" cy="41" r="2" style="fill:var(--edge)"/><circle cx="55" cy="41" r="2" style="fill:var(--edge)"/></g><path d="M64 6l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#F7D774" '+DK+' stroke-width="1.4" stroke-linejoin="round"/></svg>';
+const heartDoodle=()=>'<svg class="heart" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s-7-4.2-7-9a3.8 3.8 0 0 1 7-2 3.8 3.8 0 0 1 7 2c0 4.8-7 9-7 9z" fill="#F6B8C8" '+DK+' stroke-width="1.5" stroke-linejoin="round"/></svg>';
+const chipDoodle=()=>'<svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><rect x="1" y="1" width="20" height="14" rx="3" fill="#F7D774" '+DK+' stroke-width="1.5"/><path d="M1 8h6M15 8h6M11 1v4M11 11v4" '+DK+' stroke-width="1.2"/></svg>';
+const piggyDoodle=()=>'<svg width="42" height="42" viewBox="0 0 40 40" aria-hidden="true" style="flex:none"><ellipse cx="20" cy="22" rx="14" ry="11" fill="#F6B8C8" '+DK+' stroke-width="1.8"/><path d="M11 13l2 5M29 13l-2 5" '+DK+' stroke-width="1.8" stroke-linecap="round"/><ellipse cx="20" cy="25" rx="5" ry="3.5" fill="#FDE3EA" '+DK+' stroke-width="1.5"/><circle cx="18.3" cy="25" r=".9" style="fill:var(--edge)"/><circle cx="21.7" cy="25" r=".9" style="fill:var(--edge)"/><circle cx="14.5" cy="19" r="1.3" style="fill:var(--edge)"/><circle cx="25.5" cy="19" r="1.3" style="fill:var(--edge)"/><rect x="16" y="9" width="8" height="2.5" rx="1" style="fill:var(--edge)"/></svg>';
+
 
 /* ---------- v18 building blocks: grouped lists ---------- */
 function giRow(o){
@@ -1515,8 +1568,8 @@ function entryRow(e,swipe){
 function comingItems(days){
   const t=today(),end=shift(t,days),out=[];
   eventsBetween(t,end).forEach(e=>{
-    if(e.type==='cut'){const cy=cycleKey(e.card,e.key||e.date);out.push({date:e.date,ic:ICON.card,icbg:tintOf(e.card.color),t:esc(e.card.name)+' '+esc(esoaShort(cy)),s:'eSOA posts '+relDay(e.date),v:peso(cyAmt(e.card,cy)),vs:'so far',act:'opencard',attrs:' data-id="'+e.card.id+'"'});}
-    else if(e.type==='due'){const left=e.amt-e.paid;if(e.full||!(left>0.004))return;out.push({date:e.date,ic:BIC.bell,icbg:'var(--pink2)',t:esc(e.card.name)+' due',s:shortDay(e.date)+' · '+relDay(e.date)+(e.open?' · still adding up':''),v:peso(left),act:'opencard',attrs:' data-id="'+e.card.id+'"'});}
+    if(e.type==='cut'){const cy=cycleKey(e.card,e.key||e.date),pt=cyParts(e.card,cy),own=pt.bank?pt.total:pt.own+pt.inst;out.push({date:e.date,ic:ICON.card,icbg:tintOf(e.card.color),t:esc(e.card.name)+' '+esc(esoaShort(cy)),s:'eSOA posts '+relDay(e.date)+(!pt.bank&&pt.carry>0?' · plus '+esc(pesoShort(pt.carry))+' unpaid':''),v:peso(own),vs:'so far',act:'opencard',attrs:' data-id="'+e.card.id+'"'});}
+    else if(e.type==='due'){const left=e.amt-e.paid;if(e.full||!(left>0.004))return;out.push({date:e.date,skip:e.card.id+'|'+e.date,ic:BIC.bell,icbg:tintOf(e.card.color),t:esc(e.card.name)+' due',s:shortDay(e.date)+' · '+relDay(e.date)+(e.open?' · still adding up':''),v:peso(left),act:'opencard',attrs:' data-id="'+e.card.id+'"'});}
     else if(e.type==='rec'&&!e.done&&e.date>t){out.push({date:e.date,ic:BIC.rep,icbg:'var(--lav2)',t:esc(e.label),s:shortDay(e.date)+' · '+relDay(e.date)+' · logs itself',v:peso(e.amt),act:'go',attrs:' data-p="repeat"'});}
   });
   (S.bills||[]).forEach(bl=>billOcc(bl,t,end).forEach(d=>{if(bl.done&&bl.done[d])return;out.push({date:d,ic:BIC.bell,icbg:'var(--peachbg)',t:esc(bl.name),s:shortDay(d)+' · '+relDay(d),v:num(bl.amt)?peso(bl.amt):'',act:'go',attrs:' data-p="bills"'});}));
@@ -1524,9 +1577,13 @@ function comingItems(days){
     out.push({date:d<t?t:d,ic:ICON.card,icbg:tintOf(c.color),t:esc(c.name)+' annual fee',s:MONL[+c.feeMonth-1]+' · ask the bank to waive it ✿',v:c.feeAmt?peso(c.feeAmt):'',act:'opencard',attrs:' data-id="'+c.id+'"'});});
   return out.sort((a,b)=>a.date.localeCompare(b.date));
 }
-function comingSec(n,days){
-  const it=comingItems(days||40);
-  return gsec('Coming Up',it.length?glist(it.slice(0,n).map(giRow).join('')):'<div class="card empty2"><span class="sub">nothing coming up in the next few weeks ✿</span></div>','<button type="button" class="gl" data-act="upmodal">calendar</button>');
+function upRow(it){
+  const d=parse(it.date),s=(it.s||'').replace(/^\d{1,2} [A-Z][a-z]{2} · /,'');
+  return giRow({...it,ic:null,s,after:''}).replace('<span class="gt">','<span class="dbox" style="background:'+(it.icbg||'var(--fn)')+'"><b>'+d.getDate()+'</b><small>'+MON[d.getMonth()]+'</small></span><span class="gt">');
+}
+function comingSec(n,days,skip){
+  const it=comingItems(days||40).filter(x=>!skip||x.skip!==skip);
+  return gsec('Coming Up',it.length?glist(it.slice(0,n).map(upRow).join('')):'<div class="card empty2"><span class="sub">nothing coming up in the next few weeks ✿</span></div>','<button type="button" class="gl" data-act="upmodal">see all</button>');
 }
 function checksHtml(){
   return creditCards().map(c=>{const cy=needsCheck(c);return cy?'<button type="button" class="gi" data-act="chkopen" data-id="'+c.id+'" data-k="'+cy.key+'" style="border:1.5px solid var(--edge);border-radius:20px;background:var(--lav2)"><span class="gic" style="background:var(--card)">'+ICON.card+'</span><span class="gt"><b style="white-space:normal">'+esc(c.name)+' '+esoaName(cy)+' is out</b><small>check it matches your bank ✿</small></span><span class="gch">'+TABIC.chev+'</span></button>':'';}).join('');
@@ -1534,13 +1591,16 @@ function checksHtml(){
 function budgetWarn(){const ob=overBudgets();return ob.length?'<div class="warn row g8" data-act="go" data-p="budgets" role="button" tabindex="0" style="cursor:pointer">'+budgetSvg(22)+'<span style="flex:1">'+esc(ob[0].c.name)+' is over its '+(ob[0].per==='week'?'weekly':'monthly')+' budget by <b>'+peso(ob[0].over)+'</b>'+(ob.length>1?' (+'+(ob.length-1)+' more)':'')+'</span>'+ICON.chev+'</div>':'';}
 function thisMonthSec(){
   const t=today(),ym=t.slice(0,7),tot=monSpent(ym),plan=num(S.plan),cs=creditCards();
-  let rows='<div class="gi stack"><span class="gt"><b style="font-size:24px;font-weight:600;white-space:normal">'+peso(tot)+' <span style="font-family:Nunito,sans-serif;font-size:14px;font-weight:700;color:var(--soft)">spent in '+MONL[+ym.slice(5)-1]+'</span></b>'+(plan?'':'<small class="wrap">no monthly plan yet. tap <b>set a plan</b> to keep an eye on it</small>')+'</span>'+
-    (plan?'<span class="full">'+planBarHtml(tot,plan,true)+'</span><small class="full" style="font-size:12.5px;color:var(--soft);font-weight:700">'+planText(tot,plan)+'</small>':'')+'</div>';
-  cs.forEach(c=>{const v=monSpent(ym,e=>e.pay===c.id),cp=num(c.plan);
-    rows+='<button type="button" class="gi stack" data-act="opencard" data-id="'+c.id+'"><span class="gdot" style="background:'+c.color+'"></span><span class="gt"><b>'+esc(c.name)+'</b></span><span class="gv">'+peso(v)+(cp?'<small>of '+esc(pesoShort(cp))+'</small>':'')+'</span>'+(cp?'<span class="full">'+planBarHtml(v,cp)+'</span>':'')+'</button>';});
+  let h='<div class="card tmcard"><div class="tmnum"><b>'+peso(tot)+'</b><span>spent in '+MONL[+ym.slice(5)-1]+'</span></div>';
+  if(plan){const st=planPace(tot,plan),col=st==='over'?'#F28BA8':st==='fast'?'#E9C14F':'#8FD1A8',pc=Math.min(100,tot/plan*100);
+    h+='<span class="pwrap"><span class="pbar big"><i style="width:'+pc.toFixed(1)+'%;background:'+col+'"></i></span>'+heartDoodle().replace('class="heart"','class="heart" style="left:'+Math.max(3,pc).toFixed(1)+'%"')+'</span>'+
+      '<span class="tmsub">'+planText(tot,plan)+'</span>';}
+  else h+='<span class="tmsub">no monthly plan yet. tap <b>set a plan</b> to keep an eye on it</span>';
+  let lg=cs.map(c=>'<button type="button" data-act="opencard" data-id="'+c.id+'"><i style="background:'+c.color+'"></i>'+esc(c.name)+' '+esc(pesoShort(monSpent(ym,e=>e.pay===c.id)))+'</button>').join('');
   const other=monSpent(ym,e=>payInfo(e.pay).type!=='credit');
-  if(cs.length&&other>0)rows+='<div class="gi"><span class="gdot" style="background:#D8C6B4"></span><span class="gt"><b>Cash & e-wallets</b></span><span class="gv">'+peso(other)+'</span></div>';
-  return gsec('This Month',glist(rows),'<button type="button" class="gl" data-act="plan">'+(plan||cs.some(c=>c.plan)?'edit plan':'set a plan')+'</button>');
+  if(cs.length&&other>0)lg+='<span><i style="background:#D8C6B4"></i>Others '+esc(pesoShort(other))+'</span>';
+  if(lg)h+='<div class="tmlegend">'+lg+'</div>';
+  return gsec('This Month',h+'</div>','<button type="button" class="gl" data-act="plan">'+(plan||cs.some(c=>c.plan)?'edit plan':'set a plan')+'</button>');
 }
 
 /* DAY (Activity) */
@@ -1591,26 +1651,26 @@ function owingCards(){
     .filter(Boolean).sort((a,b)=>a.i.prev.due.localeCompare(b.i.prev.due));
 }
 function dueChip(due){const n=daysBetween(today(),due);return '<span class="hchip'+(n<=3?' late':'')+'">'+(n<0?(-n)+' day'+(n===-1?'':'s')+' overdue':n===0?'due today!':'due in '+n+' day'+(n===1?'':'s'))+'</span>';}
+function checkLinks(skipId){
+  return creditCards().filter(c=>c.id!==skipId).map(c=>{const cy=needsCheck(c);return cy?'<button type="button" class="hlink" data-act="chkopen" data-id="'+c.id+'" data-k="'+cy.key+'">check your '+esc(c.name)+' '+esoaName(cy)+' '+TABIC.chev+'</button>':'';}).join('');
+}
 function homeCC(){
   const t=today(),cs=creditCards();
-  if(!cs.length)return '<div class="card stitch hero" style="background:var(--lav2)"><span class="hl">credit card mode is on ✿</span><span class="fr" style="font-size:20px;font-weight:500">Add your credit cards and I\'ll keep track of every eSOA and due date.</span><button type="button" class="btn" data-act="newcard">Add a Card</button></div>'+thisMonthSec()+comingSec(5);
-  const ow=owingCards();let hero;
-  if(ow.length){const {c,i,left}=ow[0],cy=i.prev,mn=minDue(cy);
-    hero='<div class="card stitch hero" style="background:var(--lav2)"><div class="row sb g8"><span class="hl">next to pay</span>'+dueChip(cy.due)+'</div>'+
-      '<div class="col" style="gap:3px"><span class="fr" style="font-size:16px;font-weight:500">'+esc(c.name)+' · '+esoaName(cy)+'</span><span class="hv">'+peso(left)+'</span>'+
-      '<span class="hs">due '+niceDay(cy.due)+(mn&&mn<left?' · minimum '+peso(mn):'')+(i.paid>0?' · paid '+peso(i.paid)+' so far':'')+'</span></div>'+
-      '<div class="btn2"><button type="button" class="btn" data-act="cardpay" data-id="'+c.id+'" data-k="'+cy.key+'">Pay</button><button type="button" class="btn lite" data-act="opencard" data-id="'+c.id+'">See Card</button></div>'+
-      (ow.length>1?'<span class="hs">also to pay: '+ow.slice(1).map(x=>esc(x.c.name)+' '+esc(pesoShort(x.left))).join(' · ')+'</span>':'')+'</div>';}
-  else{const so=cs.reduce((a,c)=>{const i=cardInfo(c);return a+(i.ready?i.curAmt:i.month);},0),nx=cs.filter(c=>c.cutA).map(c=>({c,cy:cycleAt(c,t)})).sort((a,b)=>a.cy.end.localeCompare(b.cy.end))[0];
-    hero='<div class="card stitch hero" style="background:var(--mint2)"><div class="row sb g8"><span class="hl">nothing to pay right now ✿</span><span class="hchip ok">all paid</span></div>'+
-      '<div class="col" style="gap:3px"><span class="hv">'+peso(so)+'</span><span class="hs">on your cards so far'+(nx?' · next eSOA: '+esc(nx.c.name)+' '+relDay(nx.cy.end):'')+'</span></div>'+
-      '<button type="button" class="btn lite" data-act="tab" data-p="cards">See Cards</button></div>';}
-  const tiles=cs.map(c=>{const i=cardInfo(c),li=limitInfo(c),v=i.ready?i.curAmt:i.month;
-    const sub=i.ready?'so far · eSOA '+(daysBetween(t,i.cur.end)<=1?relDay(i.cur.end):shortDay(i.cur.end)):'this month · set its dates';
-    return '<button type="button" class="mtile" data-act="opencard" data-id="'+c.id+'" style="background:'+tintOf(c.color)+'"><b>'+esc(c.name)+'</b><span class="ma">'+peso(v)+'</span><small>'+sub+'</small>'+(li?'<span class="pbar"><i style="width:'+Math.min(100,li.pct*100).toFixed(1)+'%;background:'+limCol(li)+'"></i></span>':'')+'</button>';}).join('');
-  return checksHtml()+hero+budgetWarn()+
-    gsec('Your Cards','<div class="grid2">'+tiles+'</div>','<button type="button" class="gl" data-act="tab" data-p="cards">all cards</button>')+
-    thisMonthSec()+comingSec(5);
+  if(!cs.length)return '<div class="card stitch hero" style="background:var(--lav2)"><span class="hl">credit card mode is on ✿</span><span class="fr" style="font-size:20px;font-weight:500">Add your credit cards and I\'ll keep track of every eSOA and due date.</span><button type="button" class="btn" data-act="newcard">Add a Card</button></div>'+thisMonthSec()+comingSec(3);
+  const ow=owingCards();let hero,skip='';
+  if(ow.length){const {c,i,left}=ow[0],cy=i.prev,mn=minDue(cy),chk=needsCheck(c);skip=c.id+'|'+cy.due;
+    const links=checkLinks(c.id);
+    hero='<div class="card stitch hero" style="background:var(--lav2)"><div class="row sb g8"><span class="hl cute" style="font-size:19px;opacity:1">next to pay</span>'+dueChip(cy.due)+'</div>'+
+      '<div class="hrow"><div class="col" style="gap:3px"><span class="fr" style="font-size:16px;font-weight:500">'+esc(c.name)+'</span><span class="hv">'+peso(left)+'</span>'+
+      '<span class="hs">'+esoaName(cy)+' · due '+niceDay(cy.due)+(mn&&mn<left?' · min '+peso(mn):'')+(i.paid>0?' · paid '+peso(i.paid)+' so far':'')+'</span></div>'+cardDoodle(c.color)+'</div>'+
+      '<div class="btn2"><button type="button" class="btn" data-act="cardpay" data-id="'+c.id+'" data-k="'+cy.key+'">Pay</button>'+
+        (chk?'<button type="button" class="btn lite" data-act="chkopen" data-id="'+c.id+'" data-k="'+chk.key+'">Check eSOA</button>':'<button type="button" class="btn lite" data-act="opencard" data-id="'+c.id+'">See Card</button>')+'</div>'+
+      (links?'<div class="hlinks">'+links+'</div>':'')+'</div>';}
+  else{const so=cs.reduce((a,c)=>{const i=cardInfo(c);return a+(i.ready?i.curAmt:i.month);},0),nx=cs.filter(c=>c.cutA).map(c=>({c,cy:cycleAt(c,t)})).sort((a,b)=>a.cy.end.localeCompare(b.cy.end))[0],links=checkLinks('');
+    hero='<div class="card stitch hero" style="background:var(--mint2)"><div class="row sb g8"><span class="hl cute" style="font-size:19px;opacity:1">nothing to pay right now</span><span class="hchip ok">all paid</span></div>'+
+      '<div class="hrow"><div class="col" style="gap:3px"><span class="hv">'+peso(so)+'</span><span class="hs">on your cards so far'+(nx?' · next eSOA: '+esc(nx.c.name)+' '+relDay(nx.cy.end):'')+'</span></div>'+cardDoodle('#BFE6CD')+'</div>'+
+      '<button type="button" class="btn lite" data-act="tab" data-p="cards">See Cards</button>'+(links?'<div class="hlinks">'+links+'</div>':'')+'</div>';}
+  return hero+budgetWarn()+thisMonthSec()+comingSec(3,40,skip);
 }
 function homeWallet(){
   const t=today(),ws=weekStart(t),we=shift(ws,6),pws=shift(ws,-7);
@@ -1621,7 +1681,7 @@ function homeWallet(){
   const left=ps?gsec('',glist(giRow({act:'go',attrs:' data-p="income"',ic:ICON.coin,icbg:'var(--butter2)',t:'Left to spend',s:esc(pesoShort(ps.left))+' until '+shortDay(cp.until),v:esc(pesoShort(ps.perDay))+'/day',chev:true}))):'';
   return checksHtml()+hero+budgetWarn()+left+
     '<div class="card" id="wkcard">'+weekCardInner()+'</div>'+
-    (num(S.plan)||creditCards().length?thisMonthSec():'')+comingSec(5);
+    (num(S.plan)||creditCards().length?thisMonthSec():'')+comingSec(3);
 }
 P.home={html(){return S.ccMode?homeCC():homeWallet();}};
 
@@ -1826,8 +1886,8 @@ function cardTile(c){
   const chip=chk?'<span class="hchip">new eSOA ✿</span>':owe?dueChip(i.prev.due):i.prevAmt>0&&i.full&&i.prev.due>=shift(t,-20)?'<span class="hchip ok">paid ✓</span>':'<span class="hchip">eSOA '+(daysBetween(t,i.cur.end)<=1?relDay(i.cur.end):shortDay(i.cur.end))+'</span>';
   const L=owe?['<span class="cs">'+esoaName(i.prev)+'</span><span class="ca">'+peso(i.prevAmt-i.paid)+'</span>']:['<span class="cs">'+esoaName(i.cur)+' so far</span><span class="ca">'+peso(i.curAmt)+'</span>'];
   const cp=num(c.plan),mv=monSpent(ym,e=>e.pay===c.id);
-  const R=owe?'<span class="cs">next eSOA so far</span><span class="fr" style="font-size:17px;font-weight:500">'+peso(i.curAmt)+'</span>':cp?'<span class="cs">this month</span><span class="fr" style="font-size:17px;font-weight:500">'+peso(mv)+' <span class="cs">/ '+esc(pesoShort(cp))+'</span></span>':'<span class="cs">due</span><span class="fr" style="font-size:17px;font-weight:500">'+(i.cur.due?shortDay(i.cur.due):'–')+'</span>';
-  return '<button type="button" class="ctile" data-act="opencard" data-id="'+c.id+'" style="background:'+bg+'"><div class="row sb g8"><span class="cn">'+esc(c.name)+'</span>'+chip+'</div>'+
+  const R=owe?'<span class="cs">next eSOA so far</span><span class="fr" style="font-size:17px;font-weight:500">'+peso(i.curAmt-i.curCarry)+'</span>':cp?'<span class="cs">this month</span><span class="fr" style="font-size:17px;font-weight:500">'+peso(mv)+' <span class="cs">/ '+esc(pesoShort(cp))+'</span></span>':'<span class="cs">due</span><span class="fr" style="font-size:17px;font-weight:500">'+(i.cur.due?shortDay(i.cur.due):'–')+'</span>';
+  return '<button type="button" class="ctile" data-act="opencard" data-id="'+c.id+'" style="background:'+bg+'"><div class="row sb g8"><span class="cn">'+chipDoodle()+'<span class="ell">'+esc(c.name)+'</span></span>'+chip+'</div>'+
     '<div class="row sb" style="align-items:flex-end;gap:10px"><span class="col" style="min-width:0">'+L[0]+'</span><span class="col" style="align-items:flex-end;text-align:right;flex:none">'+R+'</span></div>'+
     (li?'<div class="col" style="gap:5px"><span class="pbar"><i style="width:'+Math.min(100,li.pct*100).toFixed(1)+'%;background:'+limCol(li)+'"></i></span><span class="row sb cs"><span>'+peso(Math.max(0,li.L-li.used))+' available</span><span>'+(nIns?nIns+' installment'+(nIns>1?'s':''):owe?'due '+shortDay(i.prev.due):'')+'</span></span></div>'
       :(nIns?'<span class="cs">'+nIns+' installment'+(nIns>1?'s':'')+' going</span>':''))+'</button>';
@@ -1837,22 +1897,24 @@ P.cards={
     const cs=creditCards(),t=today(),ym=t.slice(0,7);
     let owe=0,avail=0,hasLim=false,mon=0;
     cs.forEach(c=>{owe+=cardBalance(c);const li=limitInfo(c);if(li){hasLim=true;avail+=Math.max(0,li.L-li.used);}mon+=monSpent(ym,e=>e.pay===c.id);});
-    const box=(l,v)=>'<div class="card" style="padding:11px 15px;display:flex;flex-direction:column;gap:1px"><span class="sub" style="font-size:12.5px">'+l+'</span><span class="fr" style="font-size:22px;font-weight:500">'+v+'</span></div>';
     let h='';
-    if(cs.length)h+='<div class="grid2 spanall">'+box('owe on all cards',peso(owe))+box(hasLim?'still available':'on cards this month',peso(hasLim?avail:mon))+'</div>';
+    if(cs.length)h+='<div class="card owesum spanall">'+piggyDoodle()+'<div class="col"><small>you owe</small><b>'+peso(owe)+'</b></div><span class="vr"></span><div class="col"><small>'+(hasLim?'available':'this month')+'</small><b class="lt">'+peso(hasLim?avail:mon)+'</b></div></div>';
     if(cardOrdEdit)h+=gsec('Arrange Your Cards',glist(cs.map((c,ix)=>'<div class="gi"><span class="gdot" style="background:'+c.color+'"></span><span class="gt"><b>'+esc(c.name)+'</b></span><span class="row g6" style="flex:none"><button type="button" class="arrow" data-act="cardmv" data-id="'+c.id+'" data-v="-1"'+(ix===0?' disabled':'')+' aria-label="Move up">'+ICON.up+'</button><button type="button" class="arrow" data-act="cardmv" data-id="'+c.id+'" data-v="1"'+(ix===cs.length-1?' disabled':'')+' aria-label="Move down">'+ICON.down+'</button></span></div>').join('')),'<button type="button" class="gl" data-act="cardord">done</button>');
     else h+=cs.length?cs.map(cardTile).join(''):'<div class="card stitch hero" style="background:var(--pink2)"><span class="hl">no credit cards yet</span><span class="fr" style="font-size:19px;font-weight:500">Add your cards and I\'ll keep track of every eSOA, due date and installment ✿</span><button type="button" class="btn" data-act="newcard">Add a Card</button></div>';
     if(S.ccMode){const others=activePays().filter(p=>p.type!=='credit');
       if(others.length)h+=gsec('Other Ways I Pay',glist(others.map(p=>giRow({act:'openpay',attrs:' data-id="'+p.id+'"',ic:'<span class="gdot" style="background:'+p.color+'"></span>',icbg:'transparent',t:esc(p.name),v:peso(monSpent(ym,e=>e.pay===p.id)),vs:'this month',chev:true})).join('')));}
-    const plan=num(S.plan)||cs.some(c=>c.plan);
-    h+=gsec('Tools',glist(
-      giRow({act:'plan',ic:budgetSvg(20),icbg:'var(--mint2)',t:'Monthly Plan',s:plan?'how much you want to spend each month':'set how much you want to spend each month',v:num(S.plan)?esc(pesoShort(S.plan)):'',chev:true})+
-      giRow({act:'upmodal',ic:ICON.cal,icbg:'var(--butter2)',t:'Payment Calendar',s:'eSOAs, due dates and repeating payments',chev:true})+
-      giRow({act:'ics',ic:BIC.bell,icbg:'var(--pink2)',t:'Add Due Dates to My Calendar',s:'get reminders even when the app is closed',chev:true})+
-      (cs.length>1&&!cardOrdEdit?giRow({act:'cardord',ic:ICON.swapv,icbg:'var(--fn)',t:'Arrange Cards',chev:true}):'')));
+    h+=gsec('',glist(giRow({act:'cardtools',ic:ICON.cal,icbg:'var(--butter2)',t:'Card Tools',s:'monthly plan, payment calendar, reminders'+(cs.length>1?', arrange':''),chev:true})));
     return h;
   }
 };
+function cardToolsModal(){
+  const cs=creditCards(),plan=num(S.plan)||cs.some(c=>c.plan);
+  openModal('<span class="fr" style="font-size:20px">Card Tools</span>'+glist(
+      giRow({act:'plan',ic:budgetSvg(20),icbg:'var(--mint2)',t:'Monthly Plan',s:plan?'how much you want to spend each month':'set how much you want to spend each month',v:num(S.plan)?esc(pesoShort(S.plan)):'',chev:true})+
+      giRow({act:'upmodal',ic:ICON.cal,icbg:'var(--butter2)',t:'Payment Calendar',s:'eSOAs, due dates and repeating payments',chev:true})+
+      giRow({act:'ics',ic:BIC.bell,icbg:'var(--pink2)',t:'Add Due Dates to My Calendar',s:'get reminders even when the app is closed',chev:true})+
+      (cs.length>1&&!cardOrdEdit?giRow({act:'cardordm',ic:ICON.swapv,icbg:'var(--fn)',t:'Arrange Cards',chev:true}):'')));
+}
 /* HISTORY (everything) */
 let actF='all',actN=150;const actOpen=new Set();
 function allActivity(){
@@ -2932,6 +2994,8 @@ function handleAct(b,e){
     case 'oldstmt':oldStmtModal(payOf(id));return;
     case 'oldstmtgo':{const c=payOf(id),k=val('os_m');closeModal();setTimeout(()=>stmtModal(c,k),260);return;}
     case 'cardord':cardOrdEdit=!cardOrdEdit;rerender();return;
+    case 'cardtools':cardToolsModal();return;
+    case 'cardordm':closeModal();cardOrdEdit=true;setTimeout(rerender,240);return;
     case 'cardmv':{const ids=creditCards().map(x=>x.id),i=ids.indexOf(id),j=i+(+b.dataset.v);if(j<0||j>=ids.length)return;[ids[i],ids[j]]=[ids[j],ids[i]];ids.forEach((x,k)=>{payOf(x).ord=k;});save();rerender();return;}
     case 'upday':upDayModal(b.dataset.d);return;
     case 'billbreak':billBreak();return;
@@ -3043,7 +3107,7 @@ function handleAct(b,e){
       if(oldA&&(oldA.slice(8)!==cA.slice(8)||!c.cutDay||c.cutDay!==n)){
         const nk=k=>{const y=+k.slice(0,4),mo=+k.slice(5,7);return ymd(y,mo,Math.min(n,dim(y,mo)));};
         S.moves.forEach(mv=>{if(mv.to==='card:'+c.id&&mv.stmt)mv.stmt=nk(mv.stmt);});
-        if(c.ov){const o2={};Object.keys(c.ov).forEach(k=>{o2[nk(k)]=c.ov[k];});c.ov=o2;}
+        if(c.ov){const o2={};Object.keys(c.ov).forEach(k=>{const o={...c.ov[k]};delete o.cut;if(Object.keys(o).length)o2[nk(k)]=o;});c.ov=o2;}
         (S.inst||[]).forEach(x=>{if(x.card===c.id&&x.first)x.first=nk(x.first);});
       }
       c.cutA=cA;c.dueA=dA;c.cutDay=n;c.dueDay=m;
@@ -3056,6 +3120,7 @@ function handleAct(b,e){
       if(!cut){err.textContent='pick the eSOA date';return;}
       const pe=cyEnd(c,cy.k-1),ne=cyEnd(c,cy.k+1);
       if(cut<=pe||cut>=ne){err.innerHTML='⚠ that overlaps with '+(cut<=pe?'the '+esoaName(cycleK(c,cy.k-1))+' (posted '+shortDay(pe)+')':'the '+esoaName(cycleK(c,cy.k+1))+' (posts '+shortDay(ne)+')')+'. pick a date between '+shortDay(shift(pe,1))+' and '+shortDay(shift(ne,-1))+'.';return;}
+      if(Math.abs(daysBetween(k,cut))>CUTWIN){err.textContent='eSOA dates only move a few days. pick a date between '+shortDay(shift(k,-CUTWIN))+' and '+shortDay(shift(k,CUTWIN))+', or change the card\'s eSOA day in card settings.';return;}
       if(due&&due<cut){err.textContent='the due date should be after the eSOA date';return;}
       const nd=c.dueA?addMonthsDate(c.dueA,cy.k):null,o={},old=(c.ov&&c.ov[k])||{};if(old.ok)o.ok=old.ok;if(old.min!=null)o.min=old.min;
       if(cut!==k)o.cut=cut;if(due&&due!==nd)o.due=due;if(a!==''&&num(a)>=0)o.amt=num(a);
@@ -3518,7 +3583,7 @@ const bioName=()=>isApple()?'Face ID / Touch ID':'fingerprint / face unlock';
    - works offline: changes wait on this device and go up when you're back
    - a full snapshot goes to the cloud once a day, kept for 3 weeks
    ===================================================================== */
-const APP_VERSION='18',APP_DATE='20 Oct 2026';
+const APP_VERSION='2.0',APP_DATE='4 Nov 2026';
 const CLOUD={url:'https://jnbqymfqhswcgmrdoccp.supabase.co',key:'sb_publishable_K4wTiKuZYQXVjD74Rt1SrA_N68JpAHx'};   // filled in once your Supabase project exists
 const AKEY='moneylog-auth',YKEY='moneylog-sync',SEP='\u0001';
 const ARR=['cats','pays','entries','income','moves','pigs','utang','recs','trash','challenges','bills','inst'];
