@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Money Log</title>
 <meta name="theme-color" content="#FBF1E6">
 <script>(function(){var t="light";try{t=localStorage.getItem("moneylog-theme")||"light";}catch(e){}if(t==="auto"){try{t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}catch(e){t="light";}}document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==="dark"?"#1C1714":t==="soft"?"#36302B":"#FBF1E6";})();</script>
@@ -728,6 +728,16 @@ html.locked,html.locked body{overscroll-behavior:none}
   #modal .card{max-width:460px;border-radius:26px}
 }
 
+/* ---- v2.1: fields never spill past their box (iPhone date pickers keep a minimum width otherwise) ---- */
+input[type=date],input[type=time],input[type=month],input[type=datetime-local]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;width:100%;text-align:center}
+input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:center;min-height:1.2em;margin:0}
+input[type=date]::-webkit-calendar-picker-indicator{margin:0}
+.inp,.sel,textarea{min-width:0;max-width:100%}
+.grid2>*,.row>label,.col>label,label.col{min-width:0}
+.mbody{overflow-x:hidden}
+.sel{font-size:16px}
+/* v2.1: feel like an app, not a web page: no pinch or double-tap zoom */
+html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* ---- v2.0: lighter cream, soft white panels, doodles ---- */
 :root{--bg:#FFF9F3;--card:#FFFFFF;--soft:#7D5E4E;--panelbd:transparent;--panelsh:0 2px 12px rgba(92,61,46,.06);--stitch:rgba(92,61,46,.2)}
 :root[data-theme="dark"]{--panelbd:var(--line2);--panelsh:none;--stitch:rgba(242,231,219,.2)}
@@ -753,9 +763,9 @@ html.locked,html.locked body{overscroll-behavior:none}
 .tmnum{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
 .tmnum b{font-family:'Fredoka',sans-serif;font-weight:600;font-size:28px;letter-spacing:-.3px}
 .tmnum span{font-size:14px;color:var(--soft);font-weight:700}
-.pwrap{position:relative;display:block}
-.pwrap .pbar.big{height:10px;border-radius:6px}
-.pwrap .heart{position:absolute;top:-6px;width:21px;height:21px;margin-left:-10px;pointer-events:none}
+.tmbar{position:relative;display:block}
+.tmbar .pbar.big{height:10px;border-radius:6px}
+.tmbar .heart{position:absolute;top:-6px;width:21px;height:21px;margin-left:-10px;pointer-events:none}
 .tmsub{font-size:13px;color:var(--soft);font-weight:700;margin-top:-4px}
 .tmlegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:700;color:var(--soft)}
 .tmlegend button,.tmlegend span{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:2px 0;font:inherit;color:inherit}
@@ -1593,7 +1603,7 @@ function thisMonthSec(){
   const t=today(),ym=t.slice(0,7),tot=monSpent(ym),plan=num(S.plan),cs=creditCards();
   let h='<div class="card tmcard"><div class="tmnum"><b>'+peso(tot)+'</b><span>spent in '+MONL[+ym.slice(5)-1]+'</span></div>';
   if(plan){const st=planPace(tot,plan),col=st==='over'?'#F28BA8':st==='fast'?'#E9C14F':'#8FD1A8',pc=Math.min(100,tot/plan*100);
-    h+='<span class="pwrap"><span class="pbar big"><i style="width:'+pc.toFixed(1)+'%;background:'+col+'"></i></span>'+heartDoodle().replace('class="heart"','class="heart" style="left:'+Math.max(3,pc).toFixed(1)+'%"')+'</span>'+
+    h+='<span class="tmbar"><span class="pbar big"><i style="width:'+pc.toFixed(1)+'%;background:'+col+'"></i></span>'+heartDoodle().replace('class="heart"','class="heart" style="left:'+Math.max(3,pc).toFixed(1)+'%"')+'</span>'+
       '<span class="tmsub">'+planText(tot,plan)+'</span>';}
   else h+='<span class="tmsub">no monthly plan yet. tap <b>set a plan</b> to keep an eye on it</span>';
   let lg=cs.map(c=>'<button type="button" data-act="opencard" data-id="'+c.id+'"><i style="background:'+c.color+'"></i>'+esc(c.name)+' '+esc(pesoShort(monSpent(ym,e=>e.pay===c.id)))+'</button>').join('');
@@ -3583,7 +3593,7 @@ const bioName=()=>isApple()?'Face ID / Touch ID':'fingerprint / face unlock';
    - works offline: changes wait on this device and go up when you're back
    - a full snapshot goes to the cloud once a day, kept for 3 weeks
    ===================================================================== */
-const APP_VERSION='2.0',APP_DATE='4 Nov 2026';
+const APP_VERSION='2.1',APP_DATE='4 Nov 2026';
 const CLOUD={url:'https://jnbqymfqhswcgmrdoccp.supabase.co',key:'sb_publishable_K4wTiKuZYQXVjD74Rt1SrA_N68JpAHx'};   // filled in once your Supabase project exists
 const AKEY='moneylog-auth',YKEY='moneylog-sync',SEP='\u0001';
 const ARR=['cats','pays','entries','income','moves','pigs','utang','recs','trash','challenges','bills','inst'];
@@ -3921,6 +3931,10 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
   try{navigator.serviceWorker.register('sw.js').catch(()=>{});let had=!!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)nudge('Money Log got an update ✿','Reload',' data-act="reload"');had=true;});}catch(e){}
 }
+/* v2.1: block pinch zoom on iPhone/iPad (Safari ignores user-scalable=no) and ctrl/trackpad zoom */
+['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});
+document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});
 window.__ml={S:()=>S,cycleAt,cycleK,cycleKey,cyAmt,stmtInfo,cashOnHand,balOf,pigTotal,lechonSvg,pigSvg,syncNow,SY:()=>SY,AU:()=>AU,scan,SS:()=>SS,save:()=>save(),rr:()=>rerender()};
 })();
 </script>
