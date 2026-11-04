@@ -30,7 +30,7 @@ button{cursor:pointer}
 button:disabled{opacity:.35;cursor:default}
 .fr{font-family:'Fredoka',system-ui,sans-serif;font-weight:600}
 .cute{font-family:'Gaegu',cursive;font-weight:700}
-#app{max-width:460px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(110px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
+#app{max-width:460px;margin:0 auto;padding:calc(12px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 16px calc(110px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));display:flex;flex-direction:column;gap:16px}
 .row{display:flex;align-items:center}
 .col{display:flex;flex-direction:column}
 .g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}
@@ -80,7 +80,7 @@ button:disabled{opacity:.35;cursor:default}
 
 /* drawer */
 #drawer .ov{position:fixed;inset:0;background:rgba(92,61,46,.28);z-index:50;opacity:0;pointer-events:none;transition:opacity .22s}
-#drawer .pane{position:fixed;top:0;left:0;bottom:0;width:min(300px,84vw);background:var(--bg);border-right:2.5px solid var(--edge);z-index:51;transform:translateX(-106%);transition:transform .3s cubic-bezier(.2,.9,.3,1.05);padding:calc(16px + env(safe-area-inset-top)) 14px 16px;display:flex;flex-direction:column;gap:6px;overflow:auto;box-shadow:5px 0 0 var(--line)}
+#drawer .pane{position:fixed;top:0;left:0;bottom:0;width:min(300px,84vw);background:var(--bg);border-right:2.5px solid var(--edge);z-index:51;transform:translateX(-106%);transition:transform .3s cubic-bezier(.2,.9,.3,1.05);padding:calc(16px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 14px 16px;display:flex;flex-direction:column;gap:6px;overflow:auto;box-shadow:5px 0 0 var(--line)}
 #drawer.open .ov{opacity:1;pointer-events:auto}
 #drawer.open .pane{transform:none}
 @keyframes navIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
@@ -104,7 +104,7 @@ body{overflow-wrap:break-word}
 .qchip{background:var(--fn)}
 .chk{background:var(--fn)}
 .backrow{justify-content:space-between;gap:8px}
-#bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));width:min(428px,calc(100% - 20px));height:66px;z-index:15;background:var(--card);border:2.5px solid var(--edge);border-radius:26px;box-shadow:0 4px 0 var(--sh);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;padding:0 6px}
+#bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));width:min(428px,calc(100% - 20px));height:66px;z-index:15;background:var(--card);border:2.5px solid var(--edge);border-radius:26px;box-shadow:0 4px 0 var(--sh);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;padding:0 6px}
 #bnav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:800;color:var(--soft);padding:4px 0;border-radius:16px;transition:transform .09s ease}
 #bnav button:active{transform:scale(.9)}
 #bnav button .bi{width:40px;height:30px;border-radius:12px;display:flex;align-items:center;justify-content:center}
@@ -112,7 +112,7 @@ body{overflow-wrap:break-word}
 #bnav button.on .bi{background:var(--butter2)}
 #bnav .plus{width:60px;height:60px;margin:-26px auto 0;border-radius:50%;border:2.5px solid var(--edge);background:var(--butter);box-shadow:0 4px 0 var(--sh);display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:34px;color:var(--ink);padding:0}
 #bnav .plus:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sh)}
-#toast{bottom:calc(92px + env(safe-area-inset-bottom))!important}
+#toast{bottom:calc(92px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))!important}
 .coll{display:grid;grid-template-rows:0fr;opacity:0;margin-top:-16px;transition:grid-template-rows .4s cubic-bezier(.2,.8,.3,1),opacity .3s ease,margin-top .4s cubic-bezier(.2,.8,.3,1)}
 .coll.open{grid-template-rows:1fr;opacity:1;margin-top:0}
 .coll>div{overflow:hidden;min-height:0}
@@ -234,7 +234,7 @@ input[type=date].inp{font-family:'Fredoka',sans-serif;font-weight:500;font-size:
 .qchip{height:34px;border-radius:999px;border:2px solid var(--edge);background:var(--cream);box-shadow:0 2px 0 var(--sh);font-size:13px;font-weight:800;padding:0 12px}
 
 /* overlays */
-.calwrap{position:fixed;inset:0;z-index:20;background:rgba(92,61,46,.18);display:flex;justify-content:center;align-items:flex-start;padding:calc(72px + env(safe-area-inset-top)) 16px 16px;animation:fadeIn .18s ease}
+.calwrap{position:fixed;inset:0;z-index:20;background:rgba(92,61,46,.18);display:flex;justify-content:center;align-items:flex-start;padding:calc(72px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 16px 16px;animation:fadeIn .18s ease}
 .calwrap .card{width:100%;max-width:428px;animation:dropIn .26s cubic-bezier(.2,.9,.3,1.2)}
 .calwrap.noanim,.calwrap.noanim .card{animation:none}
 .calwrap.closing{animation:fadeOut .16s ease forwards}
@@ -270,7 +270,7 @@ input[type=date].inp{font-family:'Fredoka',sans-serif;font-weight:500;font-size:
 #modal.closing{animation:fadeOut .24s ease forwards}
 #modal.closing .card{animation:sinkOut .24s cubic-bezier(.4,0,.8,.4) forwards}
 #modal .card.nudge{animation:nudge .3s ease}
-#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:120;pointer-events:none;animation:toastIn .25s cubic-bezier(.2,.9,.3,1.3)}
+#toast{position:fixed;left:50%;bottom:calc(24px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));transform:translateX(-50%);z-index:120;pointer-events:none;animation:toastIn .25s cubic-bezier(.2,.9,.3,1.3)}
 #toast[hidden]{display:none}
 
 /* lock */
@@ -375,7 +375,7 @@ input[type=date].inp{font-family:'Fredoka',sans-serif;font-weight:500;font-size:
 .mtic{width:44px;height:40px;display:flex;align-items:center;justify-content:center;flex:none}
 #toast.nudge{pointer-events:auto}
 #xc_utw.missing{outline:2px dashed var(--neg);outline-offset:4px;border-radius:12px}
-#auth{position:fixed;inset:0;z-index:140;background:var(--bg);overflow:auto;display:flex;justify-content:center;padding:calc(24px + env(safe-area-inset-top)) 18px 32px;animation:fadeIn .25s ease}
+#auth{position:fixed;inset:0;z-index:140;background:var(--bg);overflow:auto;display:flex;justify-content:center;padding:calc(24px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 18px 32px;animation:fadeIn .25s ease}
 #auth[hidden]{display:none!important}
 #auth.closing{animation:fadeOut .25s ease forwards}
 @keyframes fadeOut{to{opacity:0}}
@@ -440,9 +440,9 @@ kbd{font-family:Fredoka,sans-serif;font-weight:500;font-size:13px;min-width:26px
   #bnav{display:none}
   .top>.ibtn[data-act=drawer]{display:none}
   #drawer .ov{display:none!important}
-  #drawer .pane{transform:none!important;width:var(--rail);box-shadow:none;transition:none;padding:calc(14px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom))}
+  #drawer .pane{transform:none!important;width:var(--rail);box-shadow:none;transition:none;padding:calc(14px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 10px calc(14px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
   #drawer .navi{animation:none!important}
-  #app{max-width:none;margin:0 0 0 var(--rail);padding:calc(10px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));display:block;column-width:330px;column-gap:18px}
+  #app{max-width:none;margin:0 0 0 var(--rail);padding:calc(10px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 22px calc(28px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));display:block;column-width:330px;column-gap:18px}
   #app>*{break-inside:avoid;margin:0 0 18px}
   #app>.top,#app>.backrow,#app>.hello,#app>.seg.full,#app>.spanall{column-span:all}
   #app>.ttl{display:none}
@@ -512,7 +512,7 @@ body{overscroll-behavior-y:none}
 button,a,[role=button],.card.tap{touch-action:manipulation;-webkit-touch-callout:none}
 button{-webkit-user-select:none;user-select:none}
 .inp,.sel,.plain,.note{font-size:16px}
-#app{padding:calc(14px + env(safe-area-inset-top)) 16px calc(var(--tabh) + 30px + env(safe-area-inset-bottom));gap:18px}
+#app{padding:calc(14px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 16px calc(var(--tabh) + 30px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));gap:18px}
 /* cards: thin soft border, no drop shadow. the stitched hero keeps its outline */
 .card{border:1.5px solid var(--line2);box-shadow:none;border-radius:22px}
 .card.stitch{border-color:var(--edge)}
@@ -595,7 +595,7 @@ button.gi:active,a.gi:active,.gi[data-act]:active{background:var(--fn)}
 .pbar i{display:block;height:100%;border-radius:5px}
 .pbar.big{height:11px;border-radius:6px}
 /* the bottom tab bar sits flat on the bottom edge */
-#bnav{position:fixed;left:0;right:0;bottom:0;transform:none;width:auto;height:calc(var(--tabh) + env(safe-area-inset-bottom));padding:5px 6px env(safe-area-inset-bottom);z-index:15;background:var(--card);border:0;border-top:1px solid var(--line2);border-radius:0;box-shadow:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:start}
+#bnav{position:fixed;left:0;right:0;bottom:0;transform:none;width:auto;height:calc(var(--tabh) + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));padding:5px 6px var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px));z-index:15;background:var(--card);border:0;border-top:1px solid var(--line2);border-radius:0;box-shadow:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:start}
 #bnav button{font-family:'Fredoka',sans-serif;font-weight:500;font-size:11px;color:var(--soft);gap:2px;padding:2px 0}
 #bnav button .bi{width:54px;height:30px;border-radius:15px;color:inherit}
 #bnav button .bi svg{max-width:24px;max-height:24px}
@@ -603,7 +603,7 @@ button.gi:active,a.gi:active,.gi[data-act]:active{background:var(--fn)}
 #bnav button.on .bi{background:var(--butter2)}
 #bnav .plus{width:48px;height:48px;margin:0 auto;border:2px solid var(--edge);box-shadow:none;font-size:0;background:var(--butter)}
 #bnav .plus:active{transform:scale(.92);box-shadow:none}
-#toast{bottom:calc(var(--tabh) + 14px + env(safe-area-inset-bottom))!important}
+#toast{bottom:calc(var(--tabh) + 14px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))!important}
 /* page transitions */
 @keyframes pgR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
 @keyframes pgL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
@@ -622,14 +622,14 @@ button.gi:active,a.gi:active,.gi[data-act]:active{background:var(--fn)}
 @keyframes sheetDown{from{transform:var(--from,none)}to{transform:translateY(105%)}}
 @media (max-width:739px){
   #modal{align-items:flex-end;padding:0;background:var(--sheetbg)!important}
-  #modal .card{max-width:none;width:100%;border-radius:26px 26px 0 0;max-height:calc(100dvh - 40px - env(safe-area-inset-top));padding:0 0 env(safe-area-inset-bottom);animation:sheetUp .36s cubic-bezier(.2,.9,.25,1);box-shadow:0 -6px 30px rgba(60,38,28,.18)}
+  #modal .card{max-width:none;width:100%;border-radius:26px 26px 0 0;max-height:calc(100dvh - 40px - var(--safe-area-inset-top,env(safe-area-inset-top,0px)));padding:0 0 var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px));animation:sheetUp .36s cubic-bezier(.2,.9,.25,1);box-shadow:0 -6px 30px rgba(60,38,28,.18)}
   #modal.closing .card{animation:sheetDown .24s cubic-bezier(.4,0,.8,.4) forwards}
   #modal .card.nudge{animation:nudge .3s ease}
   #modal .grab{display:flex}
   .mbody{padding:10px 18px 14px}
   .mfoot{margin:0 -18px -14px;padding:10px 18px 12px;border-radius:0;bottom:-14px;box-shadow:0 -1px 0 var(--hair)}
   .calwrap{align-items:flex-end;padding:0;background:var(--sheetbg)}
-  .calwrap .card{border-radius:26px 26px 0 0;max-width:none;border:0;padding-bottom:calc(18px + env(safe-area-inset-bottom));animation:sheetUp .34s cubic-bezier(.2,.9,.25,1)}
+  .calwrap .card{border-radius:26px 26px 0 0;max-width:none;border:0;padding-bottom:calc(18px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)));animation:sheetUp .34s cubic-bezier(.2,.9,.25,1)}
   .calwrap.closing .card{animation:sheetDown .2s ease forwards}
   #disc .card{border:0}
 }
@@ -719,11 +719,11 @@ html.locked,html.locked body{overscroll-behavior:none}
 .setrow>.sub{width:96px}
 /* iPad & laptop */
 @media (min-width:740px){
-  #app{padding:calc(14px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
+  #app{padding:calc(14px + var(--safe-area-inset-top,env(safe-area-inset-top,0px))) 22px calc(28px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
   #app>.hdr,#app>.navrow,#app>.actseg,#app>.spanall{column-span:all}
   #app>.hdr{max-width:none}
   #bnav{display:none!important}
-  #toast{bottom:calc(24px + env(safe-area-inset-bottom))!important}
+  #toast{bottom:calc(24px + var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))!important}
   #app>.navrow{margin:-6px 0 0}
   #modal .card{max-width:460px;border-radius:26px}
 }
@@ -797,6 +797,9 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjus
 <script>
 (function(){
 'use strict';
+/* v2.2: running inside the Android app (Capacitor)? */
+var NATIVE=false;try{NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());}catch(e){}
+var NPL={};function nplug(n){if(!NATIVE)return null;if(NPL[n])return NPL[n];try{const C=window.Capacitor;NPL[n]=(C.Plugins&&C.Plugins[n])||C.registerPlugin(n);}catch(e){NPL[n]=null;}return NPL[n];}
 const SWATCHES=['#F28BA8','#7FBFE0','#E9C14F','#B49AE6','#7FCB9B','#F4A86B','#9AA6E8','#C9A27E','#E99AC6','#6FC2B6'];
 const PIGC={pink:['#F9C6D3','#F28BA8'],butter:['#FBE7A6','#E9C14F'],mint:['#CDEBD6','#7FCB9B'],blue:['#CFE6F2','#7FBFE0'],lav:['#E3D8F5','#B49AE6'],peach:['#FDD9C0','#F4A86B']};
 const CURS={PHP:['₱',2],USD:['$',2],EUR:['€',2],GBP:['£',2],JPY:['¥',0],KRW:['₩',0],SGD:['S$',2],HKD:['HK$',2],AUD:['A$',2],CAD:['C$',2],TWD:['NT$',0],THB:['฿',2],MYR:['RM',2],IDR:['Rp',0],VND:['₫',0],INR:['₹',2],CNY:['CN¥',2],AED:['AED ',2]};
@@ -2475,7 +2478,7 @@ P.settings={
         '<div class="grid2" style="margin-top:12px"><button type="button" class="btn soft sm" data-act="backup">Backup</button><button type="button" class="btn soft sm" data-act="restore">Restore</button></div>'+
         '<button type="button" class="btn soft sm" style="margin-top:10px" data-act="csv">Export for Google Sheets (.csv)</button>'+
         '<span class="sub" style="display:block;text-align:center;margin-top:10px;font-size:13px">last backup: '+(S.lastBackup?esc(S.lastBackup):'never')+'</span></div>')+
-      '<div class="vtag">Money Log <b>v'+APP_VERSION+'</b> · updated '+APP_DATE+'<br><span>check this matches on all your devices ✿</span></div>';
+      '<div class="vtag">Money Log <b>v'+APP_VERSION+'</b>'+(NATIVE?' · Android app':'')+' · updated '+APP_DATE+'<br><span>check this matches on all your devices ✿</span></div>';
   }
 };
 
@@ -3408,7 +3411,14 @@ document.addEventListener('keydown',e=>{
 })();
 
 /* ---------- backup / restore / csv ---------- */
+async function nativeSave(name,text,type){
+  const FS=nplug('Filesystem'),SH=nplug('Share');
+  try{const r=await FS.writeFile({path:name,data:text,directory:'CACHE',encoding:'utf8'});
+    await SH.share({title:name,files:[r.uri],dialogTitle:'Save or share '+name});}
+  catch(e){const m=String((e&&e.message)||e||'');if(!/cancel/i.test(m))toast('couldn\'t open that file, try again?');}
+}
 function download(name,text,type){
+  if(NATIVE){nativeSave(name,text,type);return;}
   const blob=new Blob([text],{type});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
@@ -3417,7 +3427,7 @@ function doBackup(){
   const n=toYMD(new Date()),name='moneylog-backup-'+n+'.json',txt=JSON.stringify(S,null,1);S.lastBackup=n;save();
   let f=null;try{f=new File([txt],name,{type:'application/json'});}catch(_){}
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Money Log backup'}).then(()=>{rerender();toast('backup shared ✓');}).catch(()=>{download(name,txt,'application/json');rerender();toast('backup saved to downloads');});return;}
-  download(name,txt,'application/json');rerender();toast('backup saved to downloads');
+  download(name,txt,'application/json');rerender();toast(NATIVE?'pick where to keep your backup ✿':'backup saved to downloads');
 }
 function doCSV(){
   const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
@@ -3429,7 +3439,7 @@ function doCSV(){
   S.utang.forEach(u=>{rows.push([u.dir==='lent'?'lent (utang)':'borrowed (utang)',u.date,num(u.amt).toFixed(2),'',u.who,u.wallet?refInfo(u.wallet).name:'',u.note||'']);(u.pays||[]).forEach(p=>rows.push([u.dir==='lent'?'utang paid back to you':'utang you paid back',p.date,num(p.amt).toFixed(2),'',u.who,p.wallet?refInfo(p.wallet).name:'','']));});
   rows.sort((a,b)=>a[1].localeCompare(b[1]));
   download('moneylog-'+toYMD(new Date())+'.csv','﻿'+[head].concat(rows).map(r=>r.map(q).join(',')).join('\n'),'text/csv');
-  toast('csv saved to downloads');
+  toast(NATIVE?'pick where to keep your csv ✿':'csv saved to downloads');
 }
 function doRestore(file){
   const r=new FileReader();
@@ -3593,7 +3603,7 @@ const bioName=()=>isApple()?'Face ID / Touch ID':'fingerprint / face unlock';
    - works offline: changes wait on this device and go up when you're back
    - a full snapshot goes to the cloud once a day, kept for 3 weeks
    ===================================================================== */
-const APP_VERSION='2.1',APP_DATE='4 Nov 2026';
+const APP_VERSION='2.2',APP_DATE='4 Nov 2026';
 const CLOUD={url:'https://jnbqymfqhswcgmrdoccp.supabase.co',key:'sb_publishable_K4wTiKuZYQXVjD74Rt1SrA_N68JpAHx'};   // filled in once your Supabase project exists
 const AKEY='moneylog-auth',YKEY='moneylog-sync',SEP='\u0001';
 const ARR=['cats','pays','entries','income','moves','pigs','utang','recs','trash','challenges','bills','inst'];
@@ -3927,7 +3937,7 @@ if(S.lock.hash)showLock();
 if(authHash)handleAuthHash(authHash);
 else if(cloudSet()&&!loggedIn()&&!AU.skip)showAuth('login');
 else if(cloudOn())setTimeout(()=>syncNow(),600);
-if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
+if(!NATIVE&&'serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
   try{navigator.serviceWorker.register('sw.js').catch(()=>{});let had=!!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)nudge('Money Log got an update ✿','Reload',' data-act="reload"');had=true;});}catch(e){}
 }
@@ -3935,6 +3945,35 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
 ['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});
 document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault();},{passive:false});
+/* v2.2: Android app extras (only runs inside the APK) */
+if(NATIVE){
+  const AP=nplug('App'),SB=nplug('SystemBars'),BR=nplug('Browser');
+  const isRoot=p=>p===tabOf(p);
+  if(AP)AP.addListener('backButton',()=>{
+    if(!$('#lock').hidden||!$('#auth').hidden){AP.minimizeApp();return;}
+    const d=$('#disc');if(d&&!d.hidden){hideDiscard();return;}
+    if(!$('#modal').hidden){tryCloseModal();return;}
+    if(calOpen){closeCal();return;}
+    if(drawerOpen&&!WIDE()){closeDrawer();return;}
+    const here=curPage();
+    if(!isRoot(here)){goBack();return;}
+    if(here!=='home'){goPage('home');return;}
+    AP.minimizeApp();
+  });
+  const bars=()=>{try{const t=document.documentElement.getAttribute('data-theme');if(SB)SB.setStyle({style:t==='light'?'LIGHT':'DARK'});}catch(e){}};
+  bars();try{new MutationObserver(bars).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});}catch(e){}
+  /* once a day: is there a newer APK on GitHub? */
+  const newer=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0;}return false;};
+  const REL='https://github.com/bluescapade/finlog/releases/latest';
+  setTimeout(async()=>{
+    try{const today=toYMD(new Date());if(localStorage.getItem('moneylog-apkcheck')===today)return;
+      const r=await fetch('https://api.github.com/repos/bluescapade/finlog/releases/latest',{headers:{Accept:'application/vnd.github+json'}});if(!r.ok)return;
+      const j=await r.json(),v=String(j.tag_name||'').replace(/^android-v/,'');localStorage.setItem('moneylog-apkcheck',today);
+      if(v&&newer(v,APP_VERSION))nudge('new app version v'+v+' is ready ✿','Get It',' data-act="apkget"');
+    }catch(e){}
+  },2500);
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="apkget"]');if(!b)return;e.preventDefault();e.stopPropagation();try{BR?BR.open({url:REL}):window.open(REL,'_blank');}catch(_){}},true);
+}
 window.__ml={S:()=>S,cycleAt,cycleK,cycleKey,cyAmt,stmtInfo,cashOnHand,balOf,pigTotal,lechonSvg,pigSvg,syncNow,SY:()=>SY,AU:()=>AU,scan,SS:()=>SS,save:()=>save(),rr:()=>rerender()};
 })();
 </script>

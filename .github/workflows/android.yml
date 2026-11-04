@@ -1,0 +1,124 @@
+name: Build Android App
+
+on:
+  push:
+    branches: [main, android-app]
+    paths:
+      - index.html
+      - android-app/**
+      - .github/workflows/android.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-build
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Read app version
+        id: ver
+        run: |
+          V=$(grep -oP "APP_VERSION='\K[^']+" ../index.html)
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Money Log v$V, build ${{ github.run_number }}"
+
+      - name: Check for the signing password
+        id: key
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ ${#KS_PASS} -ge 12 ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          else echo "::notice::No ANDROID_KEY_PASSWORD secret yet (needs 12+ characters), so this run builds but doesn't sign or publish."; echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Install Capacitor
+        run: npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Make the Android project
+        run: |
+          npm run prepare-www
+          npx cap add android
+          npx capacitor-assets generate --android \
+            --iconBackgroundColor '#FBF1E6' --iconBackgroundColorDark '#FBF1E6' \
+            --splashBackgroundColor '#FBF1E6' --splashBackgroundColorDark '#1C1714'
+          npx cap sync android
+
+      - name: Set version
+        run: |
+          sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/; s/versionName \"[^\"]*\"/versionName \"${{ steps.ver.outputs.version }}\"/" android/app/build.gradle
+          grep -E "versionCode|versionName" android/app/build.gradle
+
+      - name: Build APK
+        working-directory: android-app/android
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Sign APK
+        if: steps.key.outputs.ok == 'true' && github.ref == 'refs/heads/main'
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # The signing key lives in the repo only as an encrypted file. The password that
+          # unlocks it is a GitHub secret the owner made herself, so nobody else has it.
+          if [ ${#KS_PASS} -lt 12 ]; then echo "::error::Add a repo secret ANDROID_KEY_PASSWORD (at least 12 characters)"; exit 1; fi
+          KS="$RUNNER_TEMP/moneylog.p12"; ENC=signing/moneylog.p12.enc
+          if [ -f "$ENC" ]; then
+            openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -pass env:KS_PASS -in "$ENC" -out "$KS" \
+              || { echo "::error::ANDROID_KEY_PASSWORD doesn't unlock the saved signing key"; exit 1; }
+          else
+            echo "First build: making the app's signing key"
+            keytool -genkeypair -keystore "$KS" -storetype PKCS12 -alias moneylog -keyalg RSA -keysize 4096 \
+              -validity 10000 -storepass:env KS_PASS -keypass:env KS_PASS -dname "CN=Money Log, O=bluescapade"
+            mkdir -p signing
+            openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt -pass env:KS_PASS -in "$KS" -out "$ENC"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$ENC"
+            git commit -m "Save the Android app's encrypted signing key"
+            git pull --rebase origin main && git push origin HEAD:main
+          fi
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          OUT="money-log-v${{ steps.ver.outputs.version }}.apk"
+          "$BT/zipalign" -p -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" sign --ks "$KS" --ks-key-alias moneylog \
+            --ks-pass env:KS_PASS --key-pass env:KS_PASS --out "$OUT" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" verify --print-certs "$OUT" | head -3
+          rm -f "$KS"
+          ls -la "$OUT"
+
+      - uses: actions/upload-artifact@v4
+        if: steps.key.outputs.ok == 'true' && github.ref == 'refs/heads/main'
+        with:
+          name: money-log-apk
+          path: android-app/money-log-v*.apk
+
+      - name: Publish release
+        if: steps.key.outputs.ok == 'true' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=${{ steps.ver.outputs.version }}
+          TAG="android-v$V"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "${{ github.sha }}" --latest \
+              --title "Money Log for Android v$V" \
+              --notes "Tap **money-log-v$V.apk** below to download, then open it to install. Your data syncs like before."
+          fi
+          gh release upload "$TAG" "money-log-v$V.apk" --clobber
